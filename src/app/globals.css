@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
- 
+
 @layer base {
   :root {
     --background: 0 0% 100%;
@@ -73,4 +73,19 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.tiptap {
+  > * + * {
+    margin-top: 0.75em;
+  }
+}
+
+
+.tiptap p.is-empty::before {
+  color: #c9c9c9;
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
 }

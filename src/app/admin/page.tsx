@@ -1,10 +1,25 @@
+"use client";
 import { Separator } from "@/src/components/ui/separator";
 import {ArticlesTable} from "@/src/components/ArticlesTable";
 import {Button} from "@/src/components/ui/button";
 import Link from "next/link";
+import {UserButton} from "@clerk/nextjs";
+import {trpc} from "@/src/app/_trpc/client";
 
 
 export default function AdminPage() {
+  // const { mutate } = trpc.postCreate.useMutation()
+
+  const createEmptyArticle = () => {
+    // mutate({
+    //   title: "Untitled",
+    //   body: "",
+    //   authorId: "",
+    //   isPublished: false,
+    //   savedAt: new Date()
+    // })
+  }
+
   return (
     <>
       <div className="hidden h-full flex-col md:flex">
@@ -13,10 +28,12 @@ export default function AdminPage() {
           <h2 className="text-lg font-semibold">Dashboard</h2>
           <div className="ml-auto flex w-full space-x-2 sm:justify-end">
             <Link href={"/admin/article/new"}>
-              <Button>
+
+              <Button className="mr-4" onClick={() => {createEmptyArticle()}}>
                 New Article
               </Button>
             </Link>
+            <UserButton afterSignOutUrl={"/"} />
           </div>
         </div>
         <Separator />
