@@ -17,7 +17,7 @@ model User {
   image       String?
   createdAt   DateTime @default(now())
   posts       Post[]
-  clerkUserId String?
+  clerkUserId String   @unique
 }
 
 model Category {
