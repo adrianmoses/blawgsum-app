@@ -32,9 +32,15 @@ export const appRouter = router({
   hello: publicProcedure.query(async () => "hello"),
   userGet: protectedProcedure
     .input(userGetSchema)
-    .query(async (opts) => {
-      const { input: { clerkUserId } } = opts;
+    .query(async ({ input, ctx }) => {
+      if (!ctx.auth.userId){
+        throw new trpcServer.TRPCError({
+          code: "UNAUTHORIZED",
+          message: "No User Found for Protected Request"
+        })
+      }
 
+      const { clerkUserId } = input;
       const user = await prisma.user.findUnique({
         where: {
           clerkUserId

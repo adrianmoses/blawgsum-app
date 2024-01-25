@@ -17,7 +17,7 @@ interface TipTapProps {
   setHtml: (html: string) => void;
   title: string;
   setTitle: (title: string) => void;
-  saveArticle: (data: string) => void;
+  saveArticle: (title: string, body: string) => void;
 }
 
 const Tiptap = ({ html, setHtml, setTitle, title, saveArticle }: TipTapProps) => {
@@ -30,7 +30,7 @@ const Tiptap = ({ html, setHtml, setTitle, title, saveArticle }: TipTapProps) =>
       Placeholder.configure({
         placeholder: ({ node }) => {
           if (node.type.name === 'heading') {
-            return 'Untitled'
+            return title
           }
 
           return 'Write something cool'

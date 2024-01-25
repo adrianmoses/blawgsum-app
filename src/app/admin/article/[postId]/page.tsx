@@ -5,16 +5,16 @@ import Tiptap from "@/src/components/Tiptap";
 import ArticleSidebar from "@/src/components/ArticleSidebar";
 import {trpc} from "@/src/app/_trpc/client";
 import {useState} from "react";
-import {auth} from "@clerk/nextjs";
+import {useAuth} from "@clerk/nextjs";
 
 
 export default function ArticlePage({ params }: { params: { postId: string } }) {
-  const { userId } : { userId: string | null } = auth();
+  const { userId } : { userId: string | null | undefined } = useAuth();
   const { postId }  = params;
   // @ts-ignore
-  const post = trpc.postGet.useQuery(postId, {enabled: !!postId})
+  const post = trpc.postGet.useQuery({ postId }, {enabled: !!postId})
   // @ts-ignore
-  const user = trpc.userGet.useQuery(userId, {enabled: !!userId})
+  const user = trpc.userGet.useQuery({ clerkUserId: userId }, {enabled: !!userId})
 
   const content = `
   <h1>Untitled</h1>

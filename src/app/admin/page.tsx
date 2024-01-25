@@ -3,15 +3,15 @@ import { Separator } from "@/src/components/ui/separator";
 import {ArticlesTable} from "@/src/components/ArticlesTable";
 import {Button} from "@/src/components/ui/button";
 import Link from "next/link";
-import {UserButton} from "@clerk/nextjs";
+import {useAuth, UserButton} from "@clerk/nextjs";
 import {trpc} from "@/src/app/_trpc/client";
 import { auth } from "@clerk/nextjs"
 import {redirect} from "next/navigation";
 
 export default function AdminPage() {
-  const { userId } : { userId: string | null } = auth();
+  const { userId } : { userId: string | null | undefined } = useAuth();
   // @ts-ignore
-  const user = trpc.userGet.useQuery(userId, {enabled: !!userId})
+  const user = trpc.userGet.useQuery({ clerkUserId: userId }, {enabled: !!userId})
   const mutation = trpc.postCreate.useMutation()
 
   const createEmptyArticle = () => {
@@ -26,7 +26,7 @@ export default function AdminPage() {
     }
   }
 
-  if (mutation.isSuccess) {
+  if (mutation.isSuccess && mutation.data) {
     const postId = mutation.data.id
     redirect(`/admin/article/${postId}`)
   }
