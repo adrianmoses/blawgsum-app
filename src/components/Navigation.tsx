@@ -1,9 +1,10 @@
 import {Button} from "@/src/components/ui/button";
 import Link from "next/link";
-import {UserButton} from "@clerk/nextjs";
+import {useAuth, UserButton} from "@clerk/nextjs";
 
 
 const Navigation = () => {
+  const { userId } = useAuth()
   return (
     <nav className="w-full p-8">
       <div className="flex flex-col justify-between items-center">
@@ -13,7 +14,15 @@ const Navigation = () => {
               Admin Dashboard
             </Button>
           </Link>
-          <UserButton afterSignOutUrl={"/"} />
+          {userId ? (
+            <UserButton afterSignOutUrl={"/"} />
+          ) : (
+            <Link href={"/sign-in"}>
+              <Button className="mr-4" variant={"secondary"}>
+                Sign In
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </nav>

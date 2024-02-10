@@ -13,9 +13,8 @@ const userSyncSchema = z.object({
 
 export async function POST(req: NextRequest) {
 
-  const response = await req.json().then((data) => {
-    return userSyncSchema.parse(data)
-  });
+  const data = await req.json()
+  const response = userSyncSchema.parse(data);
 
   console.log(response)
 

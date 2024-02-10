@@ -1,40 +1,64 @@
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/src/components/ui/tabs"
+import {Card, CardContent, CardHeader, CardTitle} from "@/src/components/ui/card";
+import {Button} from "@/src/components/ui/button";
+import {trpc} from "@/src/app/_trpc/client";
+import {timeAgo} from "@/src/app/utils/time-ago";
 
-export default function ArticleSidebar() {
- return (
-   <>
-     <Tabs defaultValue="tools">
-       <div>
-         <TabsList>
-           <TabsTrigger value="stats">Stats</TabsTrigger>
-           <TabsTrigger value="tools">Tools</TabsTrigger>
-           <TabsTrigger value="publish">Publish</TabsTrigger>
-         </TabsList>
-       </div>
-       <TabsContent value="stats">
-         <div className="flex flex-col space-y-2">
-           <span>Stats</span>
-           <span>Stats</span>
+const StatusCard = ({ isPublished, publishedAt, savedAt } : { isPublished: boolean, publishedAt: Date | null, savedAt: Date}) => {
+   return (
+     <Card>
+       <CardHeader>
+         <CardTitle>Status</CardTitle>
+       </CardHeader>
+       <CardContent>
+         <div className="flex flex-col">
+           <span>
+             {isPublished ? "Published" : "Draft"}
+           </span>
+           <span>
+             {isPublished && publishedAt && (
+               <span className="text-xs">
+               Published: {timeAgo(publishedAt)}
+               </span>
+             )}
+           </span>
+           <span className="mt-4 text-xs">
+             Last Saved: <span className="text-xs">{timeAgo(savedAt)}</span>
+           </span>
          </div>
-       </TabsContent>
-       <TabsContent value="tools">
-          <div className="flex flex-col space-y-2">
-            <span>Tools</span>
-            <span>Tools</span>
-          </div>
-       </TabsContent>
-       <TabsContent value="publish">
-          <div className="flex flex-col space-y-2">
-            <span>Publish</span>
-            <span>Publish</span>
-          </div>
-       </TabsContent>
-     </Tabs>
+       </CardContent>
+     </Card>
+   )
+}
+
+interface ArticleSidebarProps {
+  isPublished: boolean;
+  publishedAt: Date | null;
+  savedAt: Date;
+  postId: string;
+}
+export default function ArticleSidebar({ isPublished, publishedAt, savedAt, postId} : ArticleSidebarProps) {
+  const mutation = trpc.postPublish.useMutation()
+
+  const publishPost = async () => {
+    console.log('[publishPost] clicked')
+    mutation.mutate({
+      postId,
+    })
+  }
+
+  return (
+   <>
+     <div className="mb-8">
+       <StatusCard
+         isPublished={isPublished}
+         publishedAt={publishedAt}
+         savedAt={savedAt}/>
+     </div>
+     <div className="mb-8">
+       {!isPublished && (
+         <Button className="w-full" onClick={publishPost}>Publish</Button>
+       )}
+     </div>
    </>
  )
 }

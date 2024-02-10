@@ -1,38 +1,26 @@
 import {EditorContent, useEditor} from "@tiptap/react";
 import {StarterKit} from "@tiptap/starter-kit";
-import {Document} from "@tiptap/extension-document";
 import {Placeholder} from "@tiptap/extension-placeholder";
-import {Heading} from "@tiptap/extension-heading";
 import {Paragraph} from "@tiptap/extension-paragraph";
-import debounce from "@/src/app/utils/debounce"
-import findTitleHeading from "@/src/app/utils/find-title-heading";
+import {useEffect} from "react";
+import {Typography} from "@tiptap/extension-typography";
+import {Highlight} from "@tiptap/extension-highlight";
 
-
-const CustomDocument = Document.extend({
-  content: 'heading block*'
-})
 
 interface TipTapProps {
   html: string;
-  setHtml: (html: string) => void;
-  title: string;
-  setTitle: (title: string) => void;
-  saveArticle: (title: string, body: string) => void;
+  onChange: (...event: any[]) => void;
 }
 
-const Tiptap = ({ html, setHtml, setTitle, title, saveArticle }: TipTapProps) => {
+const Tiptap = ({ html, onChange }: TipTapProps) => {
+
   const editor = useEditor({
     extensions: [
-      CustomDocument,
       StarterKit.configure({
-        document: false
+        paragraph: false
       }),
       Placeholder.configure({
-        placeholder: ({ node }) => {
-          if (node.type.name === 'heading') {
-            return title
-          }
-
+        placeholder: () => {
           return 'Write something cool'
         }
       }),
@@ -41,11 +29,8 @@ const Tiptap = ({ html, setHtml, setTitle, title, saveArticle }: TipTapProps) =>
           class: 'is-empty'
         }
       }),
-      Heading.configure({
-        HTMLAttributes: {
-          class: 'text-2xl font-bold'
-        }
-      })
+      Typography,
+      Highlight
     ],
     autofocus: true,
     content: html,
@@ -53,22 +38,23 @@ const Tiptap = ({ html, setHtml, setTitle, title, saveArticle }: TipTapProps) =>
       attributes: {
         class: 'prose dark:prose-invert prose-sm sm:prose-base lg:prose-lg xl:prose-2xl m-5 focus:outline-none',
       },
+    },
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML())
     }
   })
 
-  const debounceSaveArticle = debounce(saveArticle, 300);
-  editor?.on('update', ({ editor }) => {
-    const title = findTitleHeading(editor.getJSON())
-    const htmlData = editor.getHTML();
-    setTitle(title)
-    setHtml(htmlData)
-    debounceSaveArticle();
-  })
+  useEffect(() => {
+    if (html && html !== editor?.getHTML()) {
+      editor?.commands.setContent(html)
+    }
+  }, [html]);
+
 
   return (
-    <>
+    <div className="border border-gray-400 rounded-md min-h-96">
       <EditorContent editor={editor} />
-    </>
+    </div>
   )
 }
 
