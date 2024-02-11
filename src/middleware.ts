@@ -1,7 +1,7 @@
 import { authMiddleware } from "@clerk/nextjs";
 
 export default authMiddleware({
-  publicRoutes: ["/", "/api/(.*)", "/api/user/sync"]
+  publicRoutes: ["/", "/api/(.*)", "/api/user/sync", "/api/graphql"],
 });
 
 export const config = {
