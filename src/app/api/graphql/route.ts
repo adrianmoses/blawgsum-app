@@ -7,9 +7,7 @@ const { handleRequest } = createYoga({
     typeDefs: gql`
       type User {
         id: ID!
-        username: String!
         email: String!
-        posts: [Post!]!
       }
       
       type Post {
@@ -34,6 +32,9 @@ const { handleRequest } = createYoga({
           return prisma.post.findMany({
             where: {
               authorId: userId
+            },
+            include: {
+              author: true
             }
           })
         },
