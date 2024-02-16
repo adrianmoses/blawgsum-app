@@ -12,7 +12,9 @@ export default function AdminPage() {
   return (
     <>
       <div className="hidden h-full flex-col md:flex">
-        <AdminNavigation userId={userGet.data?.id}/>
+        <AdminNavigation
+          pageName={"Articles"}
+          userId={userGet.data?.id}/>
         <div className="w-full flex py-4">
           <div className="sidebar py-4 px-8 w-2/12">
             <div className="side-nav flex flex-col justify-around">

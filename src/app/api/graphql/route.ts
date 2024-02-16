@@ -1,28 +1,54 @@
-import { ApolloServer } from "@apollo/server";
-import { startServerAndCreateNextHandler } from '@as-integrations/next';
 import { gql } from 'graphql-tag'
-import {NextRequest} from "next/server";
+import { createSchema, createYoga } from 'graphql-yoga'
+import prisma from '@/server/db'
+
+const { handleRequest } = createYoga({
+  schema: createSchema({
+    typeDefs: gql`
+      type User {
+        id: ID!
+        email: String!
+      }
+      
+      type Post {
+        id: ID!
+        title: String!
+        slug: String!
+        body: String!
+        author: User!
+        createdAt: String!
+        publishedAt: String
+        isPublished: Boolean!
+      }
+      
+      type Query {
+        postsByUser(userId: ID!): [Post!]!
+        postBySlug(slug: String!): Post
+      }
+    `,
+    resolvers: {
+      Query: {
+        postsByUser: async (parent, { userId }) => {
+          return prisma.post.findMany({
+            where: {
+              authorId: userId
+            },
+            include: {
+              author: true
+            }
+          })
+        },
+      }
+    }
+  }),
+
+  // While using Next.js file convention for routing, we need to configure Yoga to use the correct endpoint
+  graphqlEndpoint: '/api/graphql',
+
+  // Yoga needs to know how to create a valid Next response
+  fetchAPI: { Response }
+})
+
+export { handleRequest as GET, handleRequest as POST}
 
 
-const typeDefs = gql`
-  type Query {
-    hello: String
-  }
-`;
-
-const resolvers = {
-  Query: {
-    hello: () => 'Hello World'
-  },
-};
-
-const apolloServer = new ApolloServer({
-  typeDefs,
-  resolvers,
-});
-
-const handler =  startServerAndCreateNextHandler<NextRequest>(apolloServer, {
-  context: async req  => ({ req })
-});
-
-export { handler as GET, handler as POST };

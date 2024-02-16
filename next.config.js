@@ -1,4 +1,19 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/api/graphql",
+        headers: [
+          { key: "Access-Control-Allow-Credentials", value: "true" },
+          { key: "origin", value: "https://internal-ladybug-dear.ngrok-free.app"},
+          { key: "Access-Control-Allow-Origin", value: "*" },
+          { key: "Access-Control-Allow-Methods", value: "GET,OPTIONS,PATCH,DELETE,POST,PUT" },
+          { key: "Access-Control-Allow-Headers", value: "*" },
+        ]
+      }
+    ]
+  }
+}
 
 module.exports = nextConfig

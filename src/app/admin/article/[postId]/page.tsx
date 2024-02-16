@@ -32,6 +32,7 @@ import {
   CommandGroup,
   CommandItem
 } from "@/src/components/ui/command";
+import Link from "next/link";
 
 const FormSchema = z.object({
   title: z.string(),
@@ -100,19 +101,36 @@ export default function ArticlePage({ params }: { params: { postId: string } }) 
     <>
       <div className="hidden h-full flex-col md:flex">
         <div
-          className="container flex flex-col items-start justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
+          className="container w-full flex justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
           <h2 className="text-lg font-semibold">{post.data?.title || ""}</h2>
           <div className="ml-auto flex space-x-2 sm:justify-end">
-            <Button onClick={form.handleSubmit(savePost)}>
-              Save
-            </Button>
-            <Button variant="secondary" onClick={publishPost}>
-              Publish
-            </Button>
+            <div className="flex items-center">
+              <div className="mr-4">
+                <Link href={"/admin/"}>
+                  Articles
+                </Link>
+              </div>
+              <div className="mr-4">
+                <Link href={"/admin/media"}>
+                  Media
+                </Link>
+              </div>
+              <div className="mr-4">
+                <Link href={"/admin/settings/api-keys"}>
+                  API Keys
+                </Link>
+              </div>
+              <Button onClick={form.handleSubmit(savePost)}>
+                Save
+              </Button>
+              <Button variant="secondary" onClick={publishPost}>
+                Publish
+              </Button>
+            </div>
           </div>
         </div>
         <Separator/>
-        <div className="flex w-4/5 mx-auto min-h-screen px-8">
+        <div className="flex w-4/5 mx-auto min-h-screen px-8 mt-8">
           <div className="flex grow border border-black py-4 rounded-md">
             <div className="w-full">
               <Form {...form}>
@@ -120,7 +138,7 @@ export default function ArticlePage({ params }: { params: { postId: string } }) 
                   <FormField
                     control={form.control}
                     name="title"
-                    render={({ field }) => (
+                    render={({field}) => (
                       <div className="w-3/4 mx-auto mt-4">
                         <FormItem>
                           <FormLabel>Title</FormLabel>
