@@ -37,6 +37,7 @@ interface ArticleSidebarProps {
   postId: string;
 }
 export default function ArticleSidebar({ isPublished, publishedAt, savedAt, postId} : ArticleSidebarProps) {
+  console.log('[ArticleSidebar] isPublished', isPublished)
   const mutation = trpc.postPublish.useMutation()
 
   const publishPost = async () => {
