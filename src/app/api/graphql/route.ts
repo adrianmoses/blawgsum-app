@@ -1,8 +1,34 @@
 import { gql } from 'graphql-tag'
 import { createSchema, createYoga } from 'graphql-yoga'
 import prisma from '@/server/db'
+import argon2 from 'argon2'
+
+const validateApiKey = async (apiKey: string | null, userId: string) => {
+  if (!apiKey) {
+    return false
+  }
+
+  const prefix= apiKey.split('.')[0]
+  const userApiKey = await prisma.userApiKey.findFirst({
+    where: {
+      userId,
+      keyPrefix: prefix
+    }
+  })
+
+  if (userApiKey) {
+    console.log(userApiKey.apiKey, apiKey)
+    return await argon2.verify(userApiKey.apiKey, apiKey)
+  } else {
+    return false
+  }
+}
 
 const { handleRequest } = createYoga({
+  context: async ({ request }) => {
+    const apiKey = request.headers.get('x-api-key') ?? null
+    return { apiKey }
+  },
   schema: createSchema({
     typeDefs: gql`
       type User {
@@ -28,7 +54,16 @@ const { handleRequest } = createYoga({
     `,
     resolvers: {
       Query: {
-        postsByUser: async (parent, { userId }) => {
+        postsByUser: async (_, { userId }, context) => {
+          const { apiKey } = context
+
+          console.log(apiKey, userId)
+          const isValidRequest = await validateApiKey(apiKey, userId)
+
+          if (!isValidRequest) {
+            throw new Error('Unauthorized')
+          }
+
           return prisma.post.findMany({
             where: {
               authorId: userId

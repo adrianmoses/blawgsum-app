@@ -2,6 +2,8 @@ import {protectedProcedure, publicProcedure, router} from '../trpc';
 import {z} from "zod";
 import prisma from '../db';
 import * as trpcServer from "@trpc/server"
+import crypto from "crypto";
+import argon2 from "argon2";
 
 const postGetSchema = z.object({
   postId: z.string()
@@ -50,6 +52,26 @@ const mediaCreateSchema = z.object({
 const mediaListSchema = z.object({
   userId: z.string(),
 });
+
+const apiKeyGetSchema = z.object({
+  userId: z.string(),
+  name: z.string(),
+  scopes: z.array(z.string())
+});
+
+const apiKeyListSchema = z.object({
+  userId: z.string()
+});
+
+const createPrefix = (userId: string, prefixLength: number) => {
+  const userIdArr = userId.split("")
+  const prefixArr = []
+  for (let i = 0; i <= prefixLength; i++) {
+    const char = userIdArr[(Math.floor(Math.random() * userIdArr.length))]
+    prefixArr.push(char)
+  }
+  return prefixArr.join("")
+}
 
 export const appRouter = router({
   hello: publicProcedure.query(async () => "hello"),
@@ -202,6 +224,41 @@ export const appRouter = router({
         }
       })
       return media;
+    }),
+  apiKeyCreate: protectedProcedure
+    .input(apiKeyGetSchema)
+    .mutation(async ({ input }) => {
+      const { userId, name,  scopes } = input;
+      // generate an API key
+      const baseKey = crypto.randomBytes(48).toString('base64')
+      const prefix = createPrefix(userId, 6)
+      const apiKey = `${prefix}.${baseKey}`
+      const hashedApiKey = await argon2.hash(apiKey)
+
+      const apiKeyItem = await prisma.userApiKey.create({
+        data: {
+          userId,
+          name,
+          apiKey: hashedApiKey,
+          keyPrefix: prefix,
+          scopes
+        }
+      })
+
+      return {
+        apiKey
+      };
+    }),
+  apiKeyList: protectedProcedure
+    .input(apiKeyListSchema)
+    .query(async ({ input }) => {
+      const { userId } = input;
+      const apiKeys = await prisma.userApiKey.findMany({
+        where: {
+          userId
+        }
+      })
+      return apiKeys;
     })
 });
 
