@@ -2,6 +2,10 @@ import {protectedProcedure, publicProcedure, router} from '../trpc';
 import {z} from "zod";
 import prisma from '../db';
 import * as trpcServer from "@trpc/server"
+import crypto from "crypto";
+import argon2 from "argon2";
+import axios from "axios";
+import * as cheerio from "cheerio"
 
 const postGetSchema = z.object({
   postId: z.string()
@@ -50,6 +54,58 @@ const mediaCreateSchema = z.object({
 const mediaListSchema = z.object({
   userId: z.string(),
 });
+
+const apiKeyGetSchema = z.object({
+  userId: z.string(),
+  name: z.string(),
+  scopes: z.array(z.string())
+});
+
+const apiKeyListSchema = z.object({
+  userId: z.string()
+});
+
+const socialContentListSchema = z.object({
+    userId: z.string(),
+});
+
+const socialContentGetSchema = z.object({
+    socialContentId: z.string()
+});
+
+const socialGenerateSchema = z.object({
+  userId: z.string()
+});
+
+const socialContentPostSchema = z.object({
+    userId: z.string(),
+    scheduledAt: z.date(),
+    message: z.string(),
+    mediaId: z.string().optional(),
+    channel: z.string(),
+    channelUserHandle: z.string()
+})
+
+const socialContentPutSchema = z.object({
+    socialContentId: z.string(),
+    scheduledAt: z.date(),
+    message: z.string(),
+    mediaId: z.string().optional(),
+})
+
+const socialContentDeleteSchema = z.object({
+    socialContentId: z.string(),
+})
+
+const createPrefix = (userId: string, prefixLength: number) => {
+  const userIdArr = userId.split("")
+  const prefixArr = []
+  for (let i = 0; i <= prefixLength; i++) {
+    const char = userIdArr[(Math.floor(Math.random() * userIdArr.length))]
+    prefixArr.push(char)
+  }
+  return prefixArr.join("")
+}
 
 export const appRouter = router({
   hello: publicProcedure.query(async () => "hello"),
@@ -202,7 +258,170 @@ export const appRouter = router({
         }
       })
       return media;
-    })
+    }),
+  apiKeyCreate: protectedProcedure
+    .input(apiKeyGetSchema)
+    .mutation(async ({ input }) => {
+      const { userId, name,  scopes } = input;
+      // generate an API key
+      const baseKey = crypto.randomBytes(48).toString('base64')
+      const prefix = createPrefix(userId, 6)
+      const apiKey = `${prefix}.${baseKey}`
+      const hashedApiKey = await argon2.hash(apiKey)
+
+      const apiKeyItem = await prisma.userApiKey.create({
+        data: {
+          userId,
+          name,
+          apiKey: hashedApiKey,
+          keyPrefix: prefix,
+          scopes
+        }
+      })
+
+      return {
+        apiKey
+      };
+    }),
+  apiKeyList: protectedProcedure
+    .input(apiKeyListSchema)
+    .query(async ({ input }) => {
+      const { userId } = input;
+      const apiKeys = await prisma.userApiKey.findMany({
+        where: {
+          userId
+        }
+      })
+      return apiKeys;
+    }),
+  socialContentGet: protectedProcedure
+    .input(socialContentGetSchema)
+    .query(async ({ input }) => {
+        const { socialContentId } = input;
+        const socialContent = await prisma.socialContent.findUnique({
+            where: {
+                id: socialContentId
+            }
+        })
+        return socialContent;
+    }),
+  socialContentList: protectedProcedure
+      .input(socialContentListSchema)
+      .query(async ({ input }) => {
+          const { userId } = input;
+          // fetch scheduled social content
+          const socialContent = await prisma.socialContent.findMany({
+              where: {
+                  userId,
+                  sentAt: null
+              },
+              orderBy: {
+                    scheduledAt: "asc"
+              }
+          })
+          return socialContent;
+      }),
+  socialGenerate: protectedProcedure
+    .input(socialGenerateSchema)
+    .query(async ({ input }) => {
+        const { userId } = input;
+        // fetch post contents
+        const post = await prisma.post.findFirst({
+            where: {
+                authorId: userId,
+                // isPublished: true
+            },
+            orderBy: {
+                publishedAt: "desc"
+            }
+        })
+
+        if (!post) {
+            throw new trpcServer.TRPCError({
+                code: "NOT_FOUND",
+                message: "No Published Posts Found"
+            })
+        }
+
+        try {
+            // use AI api to fetch generated content
+            const resp = await axios.post("http://127.0.0.1:8000/api/generate-social", {
+                title: post?.title,
+                body: cheerio.load(post?.body).text(),
+            }, {
+                headers: {
+                    "Allow-Control-Allow-Origin": "*",
+                    "Content-Type": "application/json",
+                }
+            })
+
+            if (resp.data) {
+                return {
+                    twitter: resp.data.twitter,
+                    linkedin: resp.data.linkedin
+                }
+            } else {
+                return {
+                    twitter: [],
+                    linkedin: []
+                }
+            }
+        } catch (e) {
+            console.error("Error: ", e)
+            throw new trpcServer.TRPCError({
+                code: "INTERNAL_SERVER_ERROR",
+                message: "Failed to generate social content"
+            })
+        }
+    }),
+    socialContentPost: protectedProcedure
+        .input(socialContentPostSchema)
+        .mutation(async ({ input }) => {
+            const { userId, scheduledAt, message, mediaId, channel, channelUserHandle } = input;
+            const socialContent = await prisma.socialContent.create({
+                data: {
+                    userId,
+                    scheduledAt,
+                    message,
+                    media: mediaId,
+                    channel,
+                    channelUserHandle,
+                    isSent: false
+                }
+            })
+            return socialContent;
+
+        }),
+    socialContentPut: protectedProcedure
+        .input(socialContentPutSchema)
+        .mutation(async ({ input }) => {
+            const { socialContentId, scheduledAt, message, mediaId} = input;
+            const socialContent = await prisma.socialContent.update({
+                where: {
+                    id: socialContentId
+                },
+                data: {
+                    scheduledAt,
+                    message,
+                    media: mediaId,
+                    isSent: false
+                }
+            })
+            return socialContent;
+
+        }),
+    socialContentDelete: protectedProcedure
+        .input(socialContentDeleteSchema)
+        .mutation(async ({ input }) => {
+            const { socialContentId} = input;
+            const socialContent = await prisma.socialContent.delete({
+                where: {
+                    id: socialContentId
+                },
+            })
+            return socialContent;
+
+        }),
 });
 
 // export type definition of API

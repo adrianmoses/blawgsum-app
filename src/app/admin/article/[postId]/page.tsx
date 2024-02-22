@@ -111,6 +111,11 @@ export default function ArticlePage({ params }: { params: { postId: string } }) 
                 </Link>
               </div>
               <div className="mr-4">
+                <Link href={"/admin/social"}>
+                  Social
+                </Link>
+              </div>
+              <div className="mr-4">
                 <Link href={"/admin/media"}>
                   Media
                 </Link>

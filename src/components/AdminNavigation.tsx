@@ -48,6 +48,11 @@ const AdminNavigation = ({ pageName, userId } : AdminNavigationProps) => {
               </Link>
             </div>
             <div className="mr-4">
+              <Link href={"/admin/social"}>
+                Social
+              </Link>
+            </div>
+            <div className="mr-4">
               <Link href={"/admin/media"}>
                 Media
               </Link>
