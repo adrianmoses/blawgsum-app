@@ -232,7 +232,7 @@ const MenuIcon = ({ editor } : { editor: Editor }) => [
     isActive: editor.isActive('blockquote') ? 'is-active text-green-700' : '',
   },
   {
-    id: 12,
+    id: 21,
     name: 'table',
     icon: TableIcon,
     onClick: () =>
