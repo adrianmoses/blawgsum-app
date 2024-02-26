@@ -39,5 +39,6 @@ next-env.d.ts
 
 .dockerignore
 .env.production
+.env.development
 
 deploy.sh
