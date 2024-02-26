@@ -11,10 +11,11 @@ import {
 import { Button } from "@/src/components/ui/button";
 import { Separator } from "@/src/components/ui/separator";
 import { ScrollArea, ScrollBar } from "@/src/components/ui/scroll-area";
-import { PlusCircle } from "lucide-react";
+import {Settings, Twitter} from "lucide-react";
 import GeneratedTweet from "@/src/components/GeneratedTweet";
 import AddNewSocialPostDialog from "@/src/components/AddNewSocialPostDialog";
 import ScheduledPostsTable from "@/src/components/ScheduledPostsTable";
+import Link from "next/link";
 
 export default function SocialPage() {
 
@@ -38,9 +39,15 @@ export default function SocialPage() {
                             <TabsTrigger value="schedule">Schedule</TabsTrigger>
                         </TabsList>
                         <div>
+                            <div className="flex items-center">
+
                             {userGet.data?.id && (
                                 <AddNewSocialPostDialog userId={userGet.data?.id} />
                             )}
+                            <Link href={"/admin/social/settings"}>
+                                <Settings className="w-6 h-6 ml-4 cursor-pointer" />
+                            </Link>
+                            </div>
                         </div>
                     </div>
                     <TabsContent value="content">
@@ -58,7 +65,9 @@ export default function SocialPage() {
                         <div className="relative">
                             <ScrollArea>
                                 <div className="flex space-x-4 p-4">
-                                    {socialContentGet.data && socialContentGet.data.twitter?.tweets.map((tweet: string, index: number) => {
+                                    {socialContentGet.data &&
+                                        socialContentGet.data.twitter &&
+                                        socialContentGet.data.twitter?.tweets.map((tweet: string, index: number) => {
                                         return (
                                             <GeneratedTweet tweet={tweet} key={index}/>
                                         )

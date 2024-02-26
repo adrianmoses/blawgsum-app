@@ -18,7 +18,9 @@ export default function MediaPage()  {
   return (
     <>
       <div className="hidden h-screen flex-col md:flex">
-        <AdminNavigation userId={userGet.data?.id}/>
+        <AdminNavigation
+            pageName="Media"
+            userId={userGet.data?.id}/>
         <div className="flex h-full">
           <div className="upload-section h-full w-1/2 flex flex-col items-center justify-center">
             <div className="flex flex-col items-center">

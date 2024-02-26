@@ -26,7 +26,6 @@ interface ScheduledPostDialogProps {
     userId: string;
     contentPost: {
         id: string;
-        channel: string;
         message: string;
         createdAt: Date;
         scheduledAt: Date;
@@ -48,7 +47,7 @@ const ScheduledPostDialog = ({ userId, contentPost, refetch } : ScheduledPostDia
 
     return (
         <TableRow className="cursor-pointer">
-            <TableCell>{contentPost.channel}</TableCell>
+            <TableCell>{"twitter"}</TableCell>
             <TableCell>{contentPost.message}</TableCell>
             <TableCell>{timeAgo(contentPost.createdAt)}</TableCell>
             <TableCell>{format(contentPost.scheduledAt, "MM/dd/yyyy")}</TableCell>

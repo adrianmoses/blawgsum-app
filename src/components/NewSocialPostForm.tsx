@@ -18,7 +18,6 @@ const FormSchema = z.object({
     message: z.string(),
     scheduledAt: z.date(),
     channel: z.string(),
-    channelUserHandle: z.string(),
 })
 
 const NewSocialPostForm = ({ userId } : { userId : string }) => {
@@ -32,14 +31,13 @@ const NewSocialPostForm = ({ userId } : { userId : string }) => {
             message: "",
             scheduledAt: new Date(),
             channel: "twitter",
-            channelUserHandle: ""
         }
     });
 
     const { errors } = form.formState
 
     const saveSocialContentPost = (data: z.infer<typeof FormSchema>) => {
-        const { message, media, channel, channelUserHandle, scheduledAt } = data
+        const { message, media, channel, scheduledAt } = data
         console.log('[saveSocialContentPost] user', userId)
         if (userId) {
             mutation.mutate({
@@ -47,9 +45,7 @@ const NewSocialPostForm = ({ userId } : { userId : string }) => {
                 message,
                 mediaId: media ? media : undefined,
                 channel,
-                channelUserHandle,
                 scheduledAt
-
             })
         } else {
             console.error('No userId')
@@ -74,24 +70,6 @@ const NewSocialPostForm = ({ userId } : { userId : string }) => {
                                         />
                                     </FormControl>
                                     <FormMessage>{errors.channel && <span>{errors.channel.message}</span>}</FormMessage>
-                                </FormItem>
-                            </div>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="channelUserHandle"
-                        render={({field}) => (
-                            <div className="w-3/4 mx-auto mt-4">
-                                <FormItem>
-                                    <FormLabel>User Handle</FormLabel>
-                                    <FormControl>
-                                        <Input
-                                            {...field}
-                                            placeholder="@handle"
-                                        />
-                                    </FormControl>
-                                    <FormMessage>{errors.channelUserHandle && <span>{errors.channelUserHandle.message}</span>}</FormMessage>
                                 </FormItem>
                             </div>
                         )}
