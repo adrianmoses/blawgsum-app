@@ -50,8 +50,8 @@ export default function AdminPage() {
           </span>
           <div className="flex flex-col rounded-md bg-gray-400 p-8">
               {projectList.data?.map((project) => (
-                  <Link href={`/projects/${project.id}`} >
-                      <div key={project.id} className="flex flex-col cursor-pointer underline">
+                  <Link key={project.id} href={`/projects/${project.id}`} >
+                      <div className="flex flex-col cursor-pointer underline">
                           <span className="text-2xl font-bold">{project.name}</span>
                           <span className="text-sm">{project.description}</span>
                       </div>
