@@ -1,7 +1,7 @@
 "use client"
 import {useAuth} from "@clerk/nextjs";
 import {trpc} from "@/src/app/_trpc/client";
-import AdminNavigation from "@/src/components/AdminNavigation";
+import ProjectNavigation from "@/src/components/ProjectNavigation";
 import {
     Tabs,
     TabsList,
@@ -17,18 +17,20 @@ import AddNewSocialPostDialog from "@/src/components/AddNewSocialPostDialog";
 import ScheduledPostsTable from "@/src/components/ScheduledPostsTable";
 import Link from "next/link";
 
-export default function SocialPage() {
+export default function SocialPage({ params }: { params: { id: string }}) {
+    const { id: projectId } = params;
 
     const { userId } : { userId: string | null | undefined } = useAuth();
     // @ts-ignore
     const userGet = trpc.userGet.useQuery({ clerkUserId: userId }, {enabled: !!userId})
     // @ts-ignore
-    const socialContentGet = trpc.socialGenerate.useQuery({ userId: userGet.data?.id }, {enabled: !!userGet.data?.id})
+    const socialContentGet = trpc.socialGenerate.useQuery({ userId: userGet.data?.id, projectId, }, {enabled: !!userGet.data?.id})
     // add query to fetch generated tweets
 
     return (
         <div>
-            <AdminNavigation
+            <ProjectNavigation
+                projectId={projectId}
                 pageName={"Social"}
                 userId={userGet.data?.id} />
             <div className="container h-full px-4 py-6">
@@ -42,9 +44,11 @@ export default function SocialPage() {
                             <div className="flex items-center">
 
                             {userGet.data?.id && (
-                                <AddNewSocialPostDialog userId={userGet.data?.id} />
+                                <AddNewSocialPostDialog
+                                    projectId={projectId}
+                                    userId={userGet.data?.id} />
                             )}
-                            <Link href={"/admin/social/settings"}>
+                            <Link href={`/projects/${projectId}/social/settings`}>
                                 <Settings className="w-6 h-6 ml-4 cursor-pointer" />
                             </Link>
                             </div>
@@ -88,7 +92,9 @@ export default function SocialPage() {
                     </TabsContent>
                     <TabsContent value={"schedule"}>
                         {userGet.data?.id && (
-                            <ScheduledPostsTable userId={userGet.data?.id} />
+                            <ScheduledPostsTable
+                                projectId={projectId}
+                                userId={userGet.data?.id} />
                         )}
                     </TabsContent>
                 </Tabs>

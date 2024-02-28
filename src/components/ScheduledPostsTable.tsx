@@ -24,6 +24,7 @@ import {Button} from "@/src/components/ui/button";
 
 interface ScheduledPostDialogProps {
     userId: string;
+    projectId: string;
     contentPost: {
         id: string;
         message: string;
@@ -33,7 +34,7 @@ interface ScheduledPostDialogProps {
     refetch: () => void;
 }
 
-const ScheduledPostDialog = ({ userId, contentPost, refetch } : ScheduledPostDialogProps) => {
+const ScheduledPostDialog = ({ userId, contentPost, refetch, projectId } : ScheduledPostDialogProps) => {
     const mutation = trpc.socialContentDelete.useMutation()
 
     const deletePost = () => {
@@ -64,6 +65,7 @@ const ScheduledPostDialog = ({ userId, contentPost, refetch } : ScheduledPostDia
                             </DialogDescription>
                         </DialogHeader>
                         <EditSocialPostForm
+                            projectId={projectId}
                             socialContentId={contentPost.id}
                             userId={userId}
                             refetch={refetch}
@@ -78,8 +80,11 @@ const ScheduledPostDialog = ({ userId, contentPost, refetch } : ScheduledPostDia
     )
 }
 
-const ScheduledPostsTable = ({ userId } : { userId: string }) => {
-    const { data, refetch } = trpc.socialContentList.useQuery({ userId: userId }, {enabled: !!userId})
+const ScheduledPostsTable = ({ userId, projectId } : { userId: string, projectId: string }) => {
+    // @ts-ignore
+    const { data, refetch } = trpc.socialContentList.useQuery({ userId: userId, projectId },
+        {enabled: !!userId})
+
     return (
         <div>
             <div className="flex items-center justify-between">
@@ -111,6 +116,7 @@ const ScheduledPostsTable = ({ userId } : { userId: string }) => {
                                userId={userId}
                                contentPost={contentPost}
                                refetch={refetch}
+                               projectId={projectId}
                            />
                        ))}
                    </TableBody>

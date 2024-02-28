@@ -3,22 +3,22 @@ import { createSchema, createYoga } from 'graphql-yoga'
 import prisma from '@/server/db'
 import argon2 from 'argon2'
 
-const validateApiKey = async (apiKey: string | null, userId: string) => {
+const validateApiKey = async (apiKey: string | null, projectId: string) => {
   if (!apiKey) {
     return false
   }
 
   const prefix= apiKey.split('.')[0]
-  const userApiKey = await prisma.userApiKey.findFirst({
+  const projectApiKey = await prisma.apiKey.findFirst({
     where: {
-      userId,
+      projectId,
       keyPrefix: prefix
     }
   })
 
-  if (userApiKey) {
-    console.log(userApiKey.apiKey, apiKey)
-    return await argon2.verify(userApiKey.apiKey, apiKey)
+  if (projectApiKey) {
+    console.log(projectApiKey.apiKey, apiKey)
+    return await argon2.verify(projectApiKey.apiKey, apiKey)
   } else {
     return false
   }
@@ -48,17 +48,38 @@ const { handleRequest } = createYoga({
       }
       
       type Query {
-        postsByUser(userId: ID!): [Post!]!
-        postBySlug(slug: String!): Post
+        postByProjectAndSlug(projectId: ID!, slug: String!): Post
+        postsByProject(projectId: ID!): [Post!]!
       }
     `,
     resolvers: {
       Query: {
-        postsByUser: async (_, { userId }, context) => {
+        postByProjectAndSlug: async (_, { projectId, slug }, context) => {
           const { apiKey } = context
 
-          console.log(apiKey, userId)
-          const isValidRequest = await validateApiKey(apiKey, userId)
+          console.log(apiKey, projectId)
+          const isValidRequest = await validateApiKey(apiKey, projectId)
+
+          if (!isValidRequest) {
+            throw new Error('Unauthorized')
+          }
+
+          return prisma.post.findFirst({
+            where: {
+              slug,
+              projectId,
+            },
+            include: {
+              author: true
+            }
+          })
+
+        },
+        postsByProject: async (_, { projectId }, context) => {
+          const { apiKey } = context
+
+          console.log(apiKey, projectId)
+          const isValidRequest = await validateApiKey(apiKey, projectId)
 
           if (!isValidRequest) {
             throw new Error('Unauthorized')
@@ -66,7 +87,7 @@ const { handleRequest } = createYoga({
 
           return prisma.post.findMany({
             where: {
-              authorId: userId
+              projectId
             },
             include: {
               author: true

@@ -20,10 +20,12 @@ const FormSchema = z.object({
 interface EditSocialPostFormProps {
     userId: string;
     socialContentId: string;
+    projectId: string;
     refetch: () => void;
 }
-const EditSocialPostForm = ({ userId, socialContentId, refetch } : EditSocialPostFormProps) => {
-    const mediaItems = trpc.mediaList.useQuery({ userId: userId }, {enabled: !!userId}).data || []
+const EditSocialPostForm = ({ userId, socialContentId, projectId, refetch } : EditSocialPostFormProps) => {
+    // @ts-ignore
+    const mediaItems = trpc.mediaList.useQuery({ userId: userId, projectId }, {enabled: !!userId}).data || []
     const socialContentPost = trpc.socialContentGet
         .useQuery({ socialContentId, }, {enabled: !!socialContentId}).data
     const mutation = trpc.socialContentPut.useMutation()
@@ -134,7 +136,7 @@ const EditSocialPostForm = ({ userId, socialContentId, refetch } : EditSocialPos
                                     <FormMessage>{errors.media && <span>{errors.media.message}</span>}</FormMessage>
                                 </FormItem>
                                 <div>
-                                    <a href={"/admin/media"} className="text-xs float-right underline mt-2">Manage Media</a>
+                                    <a href={"/projects/media"} className="text-xs float-right underline mt-2">Manage Media</a>
                                 </div>
                             </div>
                         )}

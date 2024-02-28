@@ -6,18 +6,20 @@ import {generateSlug} from "random-word-slugs";
 import {trpc} from "@/src/app/_trpc/client";
 import {redirect} from "next/navigation";
 
-interface AdminNavigationProps {
+interface ProjectNavigationProps {
   pageName: string | undefined
   userId: string | undefined;
+  projectId: string;
 }
 
-const AdminNavigation = ({ pageName, userId } : AdminNavigationProps) => {
+const ProjectNavigation = ({ pageName, userId, projectId } : ProjectNavigationProps) => {
   const mutation = trpc.postCreate.useMutation()
 
   const createEmptyArticle = () => {
     console.log('[createEmptyArticle] user', userId)
     if (userId) {
       mutation.mutate({
+        projectId,
         title: "Untitled",
         body: "",
         slug: generateSlug(),
@@ -32,7 +34,7 @@ const AdminNavigation = ({ pageName, userId } : AdminNavigationProps) => {
 
   if (mutation.isSuccess && mutation.data) {
     const postId = mutation.data.id
-    redirect(`/admin/article/${postId}`)
+    redirect(`/projects/${projectId}/article/${postId}`)
   }
 
   return (
@@ -43,22 +45,22 @@ const AdminNavigation = ({ pageName, userId } : AdminNavigationProps) => {
         <div className="ml-auto flex space-x-2 sm:justify-end">
           <div className="flex items-center">
             <div className="mr-4">
-              <Link href={"/admin/"}>
+              <Link href={`/projects/${projectId}`}>
                 Articles
               </Link>
             </div>
             <div className="mr-4">
-              <Link href={"/admin/social"}>
+              <Link href={`/projects/${projectId}/social`}>
                 Social
               </Link>
             </div>
             <div className="mr-4">
-              <Link href={"/admin/media"}>
+              <Link href={`/projects/${projectId}/media`}>
                 Media
               </Link>
             </div>
             <div className="mr-4">
-              <Link href={"/admin/settings/api-keys"}>
+              <Link href={`/projects/${projectId}/settings/api-keys`}>
                 API Keys
               </Link>
             </div>
@@ -76,4 +78,4 @@ const AdminNavigation = ({ pageName, userId } : AdminNavigationProps) => {
   )
 }
 
-export default AdminNavigation
+export default ProjectNavigation

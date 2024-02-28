@@ -35,10 +35,12 @@ COPY --link . .
 RUN --mount=type=secret,id=DATABASE_URL \
     --mount=type=secret,id=DIRECT_URL \
     --mount=type=secret,id=NEXT_PUBLIC_PERISHABLE_KEY \
+    --mount=type=secret,id=OPENAI_API_KEY \
     --mount=type=secret,id=CLERK_SECRET_KEY \
     DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" \
     DIRECT_URL="$(cat /run/secrets/DIRECT_URL)" \
     NEXT_PUBLIC_PERISHABLE_KEY="$(cat /run/secrets/NEXT_PUBLIC_PERISHABLE_KEY)" \
+    OPENAI_API_KEY="$(cat /run/secrets/OPENAI_API_KEY)" \
     CLERK_SECRET_KEY="$(cat /run/secrets/CLERK_SECRET_KEY)" \
     npm run build
 

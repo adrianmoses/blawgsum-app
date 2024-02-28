@@ -10,7 +10,7 @@ import { Button } from "@/src/components/ui/button"
 import { PlusCircle } from "lucide-react";
 import NewSocialPostForm from "@/src/components/NewSocialPostForm";
 
-const AddNewSocialPostDialog = ({ userId } : { userId: string }) => {
+const AddNewSocialPostDialog = ({ userId, projectId } : { userId: string, projectId: string }) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -26,7 +26,9 @@ const AddNewSocialPostDialog = ({ userId } : { userId: string }) => {
                         Create a new social post to be scheduled
                     </DialogDescription>
                 </DialogHeader>
-                <NewSocialPostForm userId={userId} />
+                <NewSocialPostForm
+                    projectId={projectId}
+                    userId={userId} />
             </DialogContent>
         </Dialog>
     )

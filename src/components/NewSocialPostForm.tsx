@@ -20,8 +20,8 @@ const FormSchema = z.object({
     channel: z.string(),
 })
 
-const NewSocialPostForm = ({ userId } : { userId : string }) => {
-    const mediaItems = trpc.mediaList.useQuery({ userId: userId }, {enabled: !!userId}).data || []
+const NewSocialPostForm = ({ userId, projectId } : { userId : string, projectId: string }) => {
+    const mediaItems = trpc.mediaList.useQuery({ userId: userId, projectId }, {enabled: !!userId}).data || []
     const mutation = trpc.socialContentPost.useMutation()
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -45,7 +45,8 @@ const NewSocialPostForm = ({ userId } : { userId : string }) => {
                 message,
                 mediaId: media ? media : undefined,
                 channel,
-                scheduledAt
+                scheduledAt,
+                projectId
             })
         } else {
             console.error('No userId')
@@ -143,7 +144,7 @@ const NewSocialPostForm = ({ userId } : { userId : string }) => {
                                     <FormMessage>{errors.media && <span>{errors.media.message}</span>}</FormMessage>
                                 </FormItem>
                                 <div>
-                                    <a href={"/admin/media"} className="text-xs float-right underline mt-2">Manage Media</a>
+                                    <a href={"/projects/media"} className="text-xs float-right underline mt-2">Manage Media</a>
                                 </div>
                             </div>
                         )}

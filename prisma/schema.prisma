@@ -20,10 +20,24 @@ model User {
   createdAt     DateTime        @default(now())
   posts         Post[]
   clerkUserId   String          @unique
-  UserApiKey    UserApiKey[]
-  UserMedia     UserMedia[]
+  ApiKey        ApiKey[]
+  Media         Media[]
   SocialContent SocialContent[]
   SocialAuth    SocialAuth[]
+  Project       Project[]
+}
+
+model Project {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  description String?
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  posts       Post[]
+  Media       Media[]
+  ApiKey      ApiKey[]
 }
 
 model Category {
@@ -47,11 +61,13 @@ model Post {
   isPublished Boolean
   savedAt     DateTime
   publishedAt DateTime?
+  project     Project    @relation(fields: [projectId], references: [id])
+  projectId   String
 
   @@unique([authorId, slug])
 }
 
-model UserApiKey {
+model ApiKey {
   id        String   @id @default(cuid())
   name      String
   createdAt DateTime @default(now())
@@ -61,9 +77,11 @@ model UserApiKey {
   keyPrefix String
   scopes    String[]
   user      User     @relation(fields: [userId], references: [id])
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
 }
 
-model UserMedia {
+model Media {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -72,6 +90,8 @@ model UserMedia {
   mediaType String
   filename  String
   user      User     @relation(fields: [userId], references: [id])
+  projectId String
+  project   Project  @relation(fields: [projectId], references: [id])
 }
 
 model SocialContent {

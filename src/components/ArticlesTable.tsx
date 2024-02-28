@@ -3,13 +3,13 @@ import {trpc} from "@/src/app/_trpc/client";
 import {useRouter} from "next/navigation";
 
 
-export function ArticlesTable({ userId } : { userId: string }) {
-  const postList = trpc.postsListByAuthor.useQuery({ authorId: userId }, {enabled: !!userId})
+export function ArticlesTable({ projectId } : { projectId: string }) {
+  const postList = trpc.postsListByProject.useQuery({ projectId }, {enabled: !!projectId})
   const router = useRouter()
 
   const goToPost = (postId: string) => {
     console.log('[goToPost] clicked with postId', postId)
-    router.push(`/admin/article/${postId}`)
+    router.push(`/projects/${projectId}/article/${postId}`)
   }
 
   return (

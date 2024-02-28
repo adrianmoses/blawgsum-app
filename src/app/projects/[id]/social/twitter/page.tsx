@@ -21,7 +21,7 @@ export default function TwitterPage() {
     const codeVerifier = getItem("codeVerifier")
 
     if (!code || code === "null" || !state || state === "null") {
-        console.log("redirecting to /admin/social/settings")
+        console.log("redirecting to /projects/social/settings")
         router.push("/admin/social/settings")
     }
 

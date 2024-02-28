@@ -4,7 +4,7 @@ import {useState} from "react";
 import {Button} from "@/src/components/ui/button"
 import {trpc} from "@/src/app/_trpc/client";
 
-const ImageUploader = ({ userId, refetchImage } : { userId: string, refetchImage: () => void }) => {
+const ImageUploader = ({ userId, refetchImage, projectId } : { userId: string, refetchImage: () => void, projectId: string }) => {
   const [file, setFile] = useState<File | null>(null)
   const [uploading, setUploading] = useState(false)
 
@@ -16,7 +16,8 @@ const ImageUploader = ({ userId, refetchImage } : { userId: string, refetchImage
         userId,
         url: fileUrl,
         mediaType: "image",
-        filename
+        filename,
+        projectId
       }, {
         onSuccess: async () => {
           console.log('media created, refetching image list')

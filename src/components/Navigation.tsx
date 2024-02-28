@@ -9,9 +9,9 @@ const Navigation = () => {
     <nav className="w-full p-8">
       <div className="flex flex-col justify-between items-center">
         <div className="self-end mr-12 flex items-center">
-          <Link href={"/admin"}>
+          <Link href={"/projects"}>
             <Button className="mr-4">
-              Admin Dashboard
+              Projects Dashboard
             </Button>
           </Link>
           {userId ? (

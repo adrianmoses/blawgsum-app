@@ -34,8 +34,8 @@ const ApiKeyRow = ({ name, prefix, scopes, createdAt }: ApiKeyRowProps) => {
   )
 }
 
-const ApiKeysTable = ({userId}: {userId: string}) => {
-  const apiKeys = trpc.apiKeyList.useQuery({userId},  {enabled: !!userId})
+const ApiKeysTable = ({userId, projectId}: {userId: string, projectId: string}) => {
+  const apiKeys = trpc.apiKeyList.useQuery({userId, projectId},  {enabled: !!userId})
   return (
     <Table>
       <TableCaption>List of Generated API Keys</TableCaption>

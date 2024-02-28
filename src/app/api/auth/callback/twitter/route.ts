@@ -7,6 +7,6 @@ export async function GET(request: NextRequest) {
     const state = request.nextUrl.searchParams.get("state")
 
     // get the other stuff from the session
-    console.log("redirecting to /admin/social/twitter?code=" + code + "&state=" + state)
+    console.log("redirecting to /projects/social/twitter?code=" + code + "&state=" + state)
     return NextResponse.redirect(`${process.env.BLAWGSUM_APP_HOST!}/admin/social/twitter?code=${code}&state=${state}`)
 }

@@ -43,15 +43,16 @@ const FormSchema = z.object({
 })
 
 
-export default function ArticlePage({ params }: { params: { postId: string } }) {
+export default function ArticlePage({ params }: { params: { id: string, postId: string } }) {
   const { userId } : { userId: string | null | undefined } = useAuth();
-  const { postId }  = params;
+  const { postId, id: projectId }  = params;
   // @ts-ignore
   const post = trpc.postGet.useQuery({ postId }, {enabled: !!postId})
   // @ts-ignore
   const user = trpc.userGet.useQuery({ clerkUserId: userId }, {enabled: !!userId})
   // @ts-ignore
-  const mediaItems = trpc.mediaList.useQuery({ userId: user.data?.id }, {enabled: !!user.data?.id}).data || []
+  const mediaItems = trpc.mediaList.useQuery({ userId: user.data?.id, projectId },
+      {enabled: !!user.data?.id}).data || []
 
   const mutation = trpc.postUpdate.useMutation()
   const publishPostMutation = trpc.postPublish.useMutation()
@@ -106,22 +107,22 @@ export default function ArticlePage({ params }: { params: { postId: string } }) 
           <div className="ml-auto flex space-x-2 sm:justify-end">
             <div className="flex items-center">
               <div className="mr-4">
-                <Link href={"/admin/"}>
+                <Link href={"/projects/"}>
                   Articles
                 </Link>
               </div>
               <div className="mr-4">
-                <Link href={"/admin/social"}>
+                <Link href={`/projects/${projectId}/social`}>
                   Social
                 </Link>
               </div>
               <div className="mr-4">
-                <Link href={"/admin/media"}>
+                <Link href={`/projects/${projectId}/media`}>
                   Media
                 </Link>
               </div>
               <div className="mr-4">
-                <Link href={"/admin/settings/api-keys"}>
+                <Link href={`/projects/${projectId}/settings/api-keys`}>
                   API Keys
                 </Link>
               </div>
@@ -207,7 +208,7 @@ export default function ArticlePage({ params }: { params: { postId: string } }) 
                                 selected={field.value}
                                 onSelect={field.onChange}
                                 disabled={(date) =>
-                                  date > new Date() || date < new Date("1900-01-01")
+                                  date < new Date("1900-01-01")
                                 }
                               />
                             </PopoverContent>
@@ -268,7 +269,7 @@ export default function ArticlePage({ params }: { params: { postId: string } }) 
                           <FormMessage>{errors.coverImage && <span>{errors.coverImage.message}</span>}</FormMessage>
                         </FormItem>
                         <div>
-                          <a href={"/admin/media"} className="text-xs float-right underline mt-2">Manage Media</a>
+                          <a href={"/projects/media"} className="text-xs float-right underline mt-2">Manage Media</a>
                         </div>
                       </div>
                     )}

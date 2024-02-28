@@ -2,23 +2,27 @@
 import ImageUploader from "@/src/components/ImageUploader";
 import {useAuth} from "@clerk/nextjs";
 import {trpc} from "@/src/app/_trpc/client";
-import AdminNavigation from "@/src/components/AdminNavigation";
+import ProjectNavigation from "@/src/components/ProjectNavigation";
 import MediaItem from "@/src/components/MediaItem";
+import {Input} from "@/src/components/ui/input";
+import {Button} from "@/src/components/ui/button";
 
 
-export default function MediaPage()  {
+export default function MediaPage({ params } : { params: { id: string }})  {
+  const { id: projectId } = params;
   const { userId } : { userId: string | null | undefined } = useAuth();
 
   // @ts-ignore
   const userGet = trpc.userGet.useQuery({ clerkUserId: userId }, {enabled: !!userId})
 
   // @ts-ignore
-  const mediaList = trpc.mediaList.useQuery({ userId: userGet.data?.id }, {enabled: !!userGet.data?.id})
+  const mediaList = trpc.mediaList.useQuery({userId: userGet.data?.id, projectId }, {enabled: !!userGet.data?.id})
 
   return (
     <>
       <div className="hidden h-screen flex-col md:flex">
-        <AdminNavigation
+        <ProjectNavigation
+            projectId={projectId}
             pageName="Media"
             userId={userGet.data?.id}/>
         <div className="flex h-full">
@@ -26,8 +30,17 @@ export default function MediaPage()  {
             <div className="flex flex-col items-center">
               <div className="mb-8">Upload cover images</div>
               {userGet.data && (
-                <ImageUploader userId={userGet.data.id} refetchImage={mediaList.refetch}/>
+                <ImageUploader
+                    projectId={projectId}
+                    userId={userGet.data.id}
+                    refetchImage={mediaList.refetch}/>
               )}
+              <div className="my-8">Or</div>
+              <div className="mb-8">Generate Image From Prompt</div>
+              <div className="flex flex-col w-full">
+                <Input type="text" placeholder="Enter a prompt for image" className="w-full" />
+                <Button className="w-full mt-4">Generate</Button>
+              </div>
             </div>
           </div>
           <div className="media-list-section min-w-1/2 border-l-2">

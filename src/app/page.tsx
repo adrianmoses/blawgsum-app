@@ -7,6 +7,9 @@ export default function Home() {
     <>
       <Navigation/>
       <main className="flex min-h-screen flex-col items-center justify-between p-24">
+          <span>
+              Welcome to Blawgsum! Stats and stuff will go here.
+          </span>
       </main>
     </>
   )

@@ -28,7 +28,7 @@ const FormSchema = z.object({
 })
 
 
-const ApiKeyNameForm = ({ setApiKey, userId } : { setApiKey: (apiKey: string) => void, userId: string }) => {
+const ApiKeyNameForm = ({ setApiKey, userId, projectId } : { setApiKey: (apiKey: string) => void, userId: string, projectId: string }) => {
   const mutation = trpc.apiKeyCreate.useMutation()
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -39,7 +39,7 @@ const ApiKeyNameForm = ({ setApiKey, userId } : { setApiKey: (apiKey: string) =>
     console.log('data', data)
     const { name} = data
     if (name && userId) {
-      await mutation.mutateAsync({ name, userId, scopes: []  })
+      await mutation.mutateAsync({ name, userId, scopes: [], projectId  })
     }
   }
 
@@ -118,7 +118,7 @@ const ApiKeyDisplay = ({ apiKey }: {apiKey: string}) => {
   )
 }
 
-const ApiKeyDialog = ({userId}: { userId: string }) => {
+const ApiKeyDialog = ({userId, projectId }: { userId: string, projectId: string }) => {
 
   const [apiKey, setApiKey] = useState<string | null>(null)
 
@@ -138,7 +138,9 @@ const ApiKeyDialog = ({userId}: { userId: string }) => {
         {apiKey ? (
           <ApiKeyDisplay apiKey={apiKey} />
           ) : (
-          <ApiKeyNameForm setApiKey={setApiKey} userId={userId} />
+          <ApiKeyNameForm setApiKey={setApiKey}
+                          userId={userId}
+                          projectId={projectId} />
         )}
     </DialogContent>
   </Dialog>
