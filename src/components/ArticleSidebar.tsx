@@ -35,8 +35,9 @@ interface ArticleSidebarProps {
   publishedAt: Date | null;
   savedAt: Date;
   postId: string;
+  handleSave: () => void;
 }
-export default function ArticleSidebar({ isPublished, publishedAt, savedAt, postId} : ArticleSidebarProps) {
+export default function ArticleSidebar({ isPublished, publishedAt, savedAt, postId, handleSave } : ArticleSidebarProps) {
   console.log('[ArticleSidebar] isPublished', isPublished)
   const mutation = trpc.postPublish.useMutation()
 
@@ -55,10 +56,13 @@ export default function ArticleSidebar({ isPublished, publishedAt, savedAt, post
          publishedAt={publishedAt}
          savedAt={savedAt}/>
      </div>
-     <div className="mb-8">
+     <div className="mb-4">
        {!isPublished && (
          <Button className="w-full" onClick={publishPost}>Publish</Button>
        )}
+     </div>
+     <div className="mb-4">
+         <Button className="w-full" onClick={handleSave} variant="secondary">Save</Button>
      </div>
    </>
  )

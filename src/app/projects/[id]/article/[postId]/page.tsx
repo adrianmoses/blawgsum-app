@@ -33,6 +33,7 @@ import {
   CommandItem
 } from "@/src/components/ui/command";
 import Link from "next/link";
+import ProjectNavigation from "@/src/components/ProjectNavigation";
 
 const FormSchema = z.object({
   title: z.string(),
@@ -101,207 +102,183 @@ export default function ArticlePage({ params }: { params: { id: string, postId: 
   return (
     <>
       <div className="hidden h-full flex-col md:flex">
-        <div
-          className="container w-full flex justify-between space-y-2 py-4 sm:flex-row sm:items-center sm:space-y-0 md:h-16">
-          <h2 className="text-lg font-semibold">{post.data?.title || ""}</h2>
-          <div className="ml-auto flex space-x-2 sm:justify-end">
-            <div className="flex items-center">
-              <div className="mr-4">
-                <Link href={"/projects/"}>
-                  Articles
-                </Link>
-              </div>
-              <div className="mr-4">
-                <Link href={`/projects/${projectId}/social`}>
-                  Social
-                </Link>
-              </div>
-              <div className="mr-4">
-                <Link href={`/projects/${projectId}/media`}>
-                  Media
-                </Link>
-              </div>
-              <div className="mr-4">
-                <Link href={`/projects/${projectId}/settings/api-keys`}>
-                  API Keys
-                </Link>
-              </div>
-              <Button onClick={form.handleSubmit(savePost)}>
-                Save
-              </Button>
-              <Button variant="secondary" onClick={publishPost}>
-                Publish
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ProjectNavigation
+            pageName={post.data?.title || "Untitled"}
+            userId={user.data?.id}
+            projectId={projectId} />
         <Separator/>
         <div className="flex w-4/5 mx-auto min-h-screen px-8 mt-8">
-          <div className="flex grow border border-black py-4 rounded-md">
-            <div className="w-full">
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(savePost)} className="w-full">
-                  <FormField
-                    control={form.control}
-                    name="title"
-                    render={({field}) => (
-                      <div className="w-3/4 mx-auto mt-4">
-                        <FormItem>
-                          <FormLabel>Title</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              placeholder="Title"
-                            />
-                          </FormControl>
-                          <FormMessage>{errors.title && <span>{errors.title.message}</span>}</FormMessage>
-                        </FormItem>
-                      </div>
-                    )}
+          <div className="flex border border-black py-4 rounded-md">
+            <div className="flex flex-col mx-auto w-3/4">
+              <div className="w-full">
+                <Form {...form}>
+                  <form onSubmit={form.handleSubmit(savePost)} className="w-full">
+                    <FormField
+                        control={form.control}
+                        name="title"
+                        render={({field}) => (
+                            <div className="w-3/4 mx-auto mt-4">
+                              <FormItem>
+                                <FormLabel>Title</FormLabel>
+                                <FormControl>
+                                  <Input
+                                      {...field}
+                                      placeholder="Title"
+                                  />
+                                </FormControl>
+                                <FormMessage>{errors.title && <span>{errors.title.message}</span>}</FormMessage>
+                              </FormItem>
+                            </div>
+                        )}
                     />
-                  <FormField
-                    control={form.control}
-                    name="slug"
-                    render={({ field }) => (
-                      <div className="w-3/4 mx-auto mt-4">
-                        <FormItem>
-                          <FormLabel>Slug</FormLabel>
-                          <FormControl>
-                            <Input
-                              {...field}
-                              placeholder="slug"
-                            />
-                          </FormControl>
-                          <FormMessage>{errors.slug && <span>{errors.slug.message}</span>}</FormMessage>
-                        </FormItem>
-                      </div>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="publishedAt"
-                    render={({ field }) => (
-                      <div className="w-3/4 mx-auto mt-4">
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Published Date</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  className={cn("w-full pl-3 text-left font-normal",
-                                    !field.value && "text-muted-foreground")}
-                                >
-                                  {field.value ? (
-                                    format(field.value, "PPP")
-                                  ) : (
-                                    <span>Pick a Date</span>
-                                  )}
-                                  <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="p-0" align="start">
-                              <Calendar
-                                mode="single"
-                                // @ts-ignore
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date < new Date("1900-01-01")
-                                }
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage>{errors.publishedAt && <span>{errors.publishedAt.message}</span>}</FormMessage>
-                        </FormItem>
-                      </div>
-                    )}
-                  />
-                  <FormField
-                    control={form.control}
-                    name="coverImage"
-                    render={({ field }) => (
-                      <div className="w-3/4 mx-auto mt-4">
-                        <FormItem className="flex flex-col">
-                          <FormLabel>Cover Image</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={"outline"}
-                                  role={"combobox"}
-                                  className={cn("w-full justify-between",
-                                    !field.value && "text-muted-foreground")}
-                                >
-                                  {field.value ? (
-                                    mediaItems.find((m) => m.id === field.value)?.filename
-                                  ) : (
-                                    "Select Cover Image"
-                                  )}
-                                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[750px] p-0">
-                              <Command>
-                                <CommandInput placeholder="Search for media" />
-                                <CommandEmpty>No Media Found</CommandEmpty>
-                                <CommandGroup>
-                                  {mediaItems.map((media) => (
-                                    <CommandItem
-                                      key={media.id}
-                                      value={media.id}
-                                      onSelect={() => {
-                                        form.setValue("coverImage", media.id)
-                                      }} >
-                                      <Check className={cn("mr-2 h-4 w-4", media.id === field.value)} />
-                                      <div className="flex">
-                                        <img src={media.url} alt={media.filename} className="h-8 w-8" />
-                                        <span className="ml-4">{media.filename}</span>
-                                      </div>
-                                    </CommandItem>
-                                  ))}
-                                </CommandGroup>
-                              </Command>
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage>{errors.coverImage && <span>{errors.coverImage.message}</span>}</FormMessage>
-                        </FormItem>
-                        <div>
-                          <a href={"/projects/media"} className="text-xs float-right underline mt-2">Manage Media</a>
-                        </div>
-                      </div>
-                    )}
-                 />
-                  <Controller
-                    control={form.control}
-                    name={"body"}
-                    render={({ field }) => (
-                      <div className="w-3/4 mx-auto mt-4">
-                        <FormItem>
-                          <FormLabel>Content</FormLabel>
-                          <Tiptap
-                            html={field.value}
-                            onChange={field.onChange}
-                          />
-                          <FormMessage>{errors.body && <span>{errors.body.message}</span>}</FormMessage>
-                        </FormItem>
-                      </div>
-                    )}
-                  />
-                </form>
-              </Form>
+                    <FormField
+                        control={form.control}
+                        name="slug"
+                        render={({field}) => (
+                            <div className="w-3/4 mx-auto mt-4">
+                              <FormItem>
+                                <FormLabel>Slug</FormLabel>
+                                <FormControl>
+                                  <Input
+                                      {...field}
+                                      placeholder="slug"
+                                  />
+                                </FormControl>
+                                <FormMessage>{errors.slug && <span>{errors.slug.message}</span>}</FormMessage>
+                              </FormItem>
+                            </div>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="publishedAt"
+                        render={({field}) => (
+                            <div className="w-3/4 mx-auto mt-4">
+                              <FormItem className="flex flex-col">
+                                <FormLabel>Published Date</FormLabel>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <FormControl>
+                                      <Button
+                                          variant={"outline"}
+                                          className={cn("w-full pl-3 text-left font-normal",
+                                              !field.value && "text-muted-foreground")}
+                                      >
+                                        {field.value ? (
+                                            format(field.value, "PPP")
+                                        ) : (
+                                            <span>Pick a Date</span>
+                                        )}
+                                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50"/>
+                                      </Button>
+                                    </FormControl>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="p-0" align="start">
+                                    <Calendar
+                                        mode="single"
+                                        // @ts-ignore
+                                        selected={field.value}
+                                        onSelect={field.onChange}
+                                        disabled={(date) =>
+                                            date < new Date("1900-01-01")
+                                        }
+                                    />
+                                  </PopoverContent>
+                                </Popover>
+                                <FormMessage>{errors.publishedAt &&
+                                    <span>{errors.publishedAt.message}</span>}</FormMessage>
+                              </FormItem>
+                            </div>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="coverImage"
+                        render={({field}) => (
+                            <div className="w-3/4 mx-auto mt-4">
+                              <FormItem className="flex flex-col">
+                                <FormLabel>Cover Image</FormLabel>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <FormControl>
+                                      <Button
+                                          variant={"outline"}
+                                          role={"combobox"}
+                                          className={cn("w-full justify-between",
+                                              !field.value && "text-muted-foreground")}
+                                      >
+                                        {field.value ? (
+                                            mediaItems.find((m) => m.id === field.value)?.filename
+                                        ) : (
+                                            "Select Cover Image"
+                                        )}
+                                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50"/>
+                                      </Button>
+                                    </FormControl>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-[750px] p-0">
+                                    <Command>
+                                      <CommandInput placeholder="Search for media"/>
+                                      <CommandEmpty>No Media Found</CommandEmpty>
+                                      <CommandGroup>
+                                        {mediaItems.map((media) => (
+                                            <CommandItem
+                                                key={media.id}
+                                                value={media.id}
+                                                onSelect={() => {
+                                                  form.setValue("coverImage", media.id)
+                                                }}>
+                                              <Check className={cn("mr-2 h-4 w-4", media.id === field.value)}/>
+                                              <div className="flex">
+                                                <img src={media.url} alt={media.filename} className="h-8 w-8"/>
+                                                <span className="ml-4">{media.filename}</span>
+                                              </div>
+                                            </CommandItem>
+                                        ))}
+                                      </CommandGroup>
+                                    </Command>
+                                  </PopoverContent>
+                                </Popover>
+                                <FormMessage>{errors.coverImage &&
+                                    <span>{errors.coverImage.message}</span>}</FormMessage>
+                              </FormItem>
+                              <div>
+                                <a href={"/projects/media"} className="text-xs float-right underline mt-2">Manage
+                                  Media</a>
+                              </div>
+                            </div>
+                        )}
+                    />
+                    <Controller
+                        control={form.control}
+                        name={"body"}
+                        render={({field}) => (
+                            <div className="w-3/4 mx-auto mt-4">
+                              <FormItem>
+                                <FormLabel>Content</FormLabel>
+                                <Tiptap
+                                    html={field.value}
+                                    onChange={field.onChange}
+                                />
+                                <FormMessage>{errors.body && <span>{errors.body.message}</span>}</FormMessage>
+                              </FormItem>
+                            </div>
+                        )}
+                    />
+                  </form>
+                </Form>
+              </div>
             </div>
           </div>
           <div className="w-1/5 border border-black p-4 ml-8 rounded-md">
             {post.isSuccess && (
-              <ArticleSidebar
-                postId={postId}
-                isPublished={post.data.isPublished}
-                publishedAt={post.data.publishedAt}
-                savedAt={post.data.savedAt}
-              />
+                <ArticleSidebar
+                    postId={postId}
+                    isPublished={post.data.isPublished}
+                    publishedAt={post.data.publishedAt}
+                    savedAt={post.data.savedAt}
+                    handleSave={form.handleSubmit(savePost)}
+                />
             )}
           </div>
         </div>
