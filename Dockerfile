@@ -44,6 +44,19 @@ RUN --mount=type=secret,id=DATABASE_URL \
     CLERK_SECRET_KEY="$(cat /run/secrets/CLERK_SECRET_KEY)" \
     npm run build
 
+
+# Run DB migrations and seed data
+RUN --mount=type=secret,id=DATABASE_URL \
+    --mount=type=secret,id=DIRECT_URL \
+    DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" \
+    DIRECT_URL="$(cat /run/secrets/DIRECT_URL)" \
+    npx prisma migrate deploy
+RUN --mount=type=secret,id=DATABASE_URL \
+    --mount=type=secret,id=DIRECT_URL \
+    DATABASE_URL="$(cat /run/secrets/DATABASE_URL)" \
+    DIRECT_URL="$(cat /run/secrets/DIRECT_URL)" \
+    npm run prisma:seed
+
 # Remove development dependencies
 RUN npm prune --omit=dev
 

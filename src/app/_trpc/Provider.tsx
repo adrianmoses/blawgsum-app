@@ -8,7 +8,7 @@ import superjson from "superjson";
 
 const getBaseUrl = () => {
   if (typeof window !== "undefined") return ""; // browser should use relative url
-  if (process.env.HOST_URL) return `https://${process.env.HOST_URL}`; // SSR should use host url
+  if (process.env.HOST_URL) return `https://${process.env.HOST_URL}/`; // SSR should use host url
   return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
 };
 

@@ -48,10 +48,10 @@ export default function AdminPage() {
           <span>
               Welcome to Blawgsum! Projects Go Here.
           </span>
-          <div className="flex flex-col rounded-md bg-gray-400 p-8">
+          <div className="flex flex-col">
               {projectList.data?.map((project) => (
                   <Link key={project.id} href={`/projects/${project.id}`} >
-                      <div className="flex flex-col cursor-pointer underline">
+                      <div className="flex flex-col rounded-md bg-gray-400 p-8 cursor-pointer underline">
                           <span className="text-2xl font-bold">{project.name}</span>
                           <span className="text-sm">{project.description}</span>
                       </div>
