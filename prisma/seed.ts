@@ -1,16 +1,25 @@
 import { PrismaClient } from '@prisma/client'
 const prisma = new PrismaClient()
 async function main() {
-    await prisma.socialProvider.createMany({
-        data:[
-            {
-                provider: "twitter",
-            },
-            {
-                provider: "linkedin",
+    const providers = ["twitter", "linkedin"];
+
+    for (const provider of providers) {
+        const existingProvider = await prisma.socialProvider.findUnique({
+           where: {
+               provider
+           }
+        });
+
+        if (existingProvider) {
+            console.log(`Provider ${provider} already exists`)
+            continue;
+        }
+        await prisma.socialProvider.create({
+            data: {
+                provider
             }
-        ]
-    })
+        })
+    }
 }
 
 main()
