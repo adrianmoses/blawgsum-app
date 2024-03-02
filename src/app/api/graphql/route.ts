@@ -2,6 +2,7 @@ import { gql } from 'graphql-tag'
 import { createSchema, createYoga } from 'graphql-yoga'
 import prisma from '@/server/db'
 import argon2 from 'argon2'
+import {timeAgo} from "@/src/app/utils/time-ago";
 
 const validateApiKey = async (apiKey: string | null, projectId: string) => {
   if (!apiKey) {
@@ -44,12 +45,15 @@ const { handleRequest } = createYoga({
         author: User!
         createdAt: String!
         publishedAt: String
+        publishedSince: String
         isPublished: Boolean!
       }
       
       type Query {
         postByProjectAndSlug(projectId: ID!, slug: String!): Post
         postsByProject(projectId: ID!): [Post!]!
+        publishedPostsByProject(projectId: ID!): [Post!]!
+        postLatestByProject(projectId: ID!): Post
       }
     `,
     resolvers: {
@@ -64,7 +68,7 @@ const { handleRequest } = createYoga({
             throw new Error('Unauthorized')
           }
 
-          return prisma.post.findFirst({
+          const post = await prisma.post.findFirst({
             where: {
               slug,
               projectId,
@@ -73,6 +77,12 @@ const { handleRequest } = createYoga({
               author: true
             }
           })
+
+          if (post && post.publishedAt) {
+            post.publishedSince = timeAgo(post.publishedAt)
+          }
+
+          return post
 
         },
         postsByProject: async (_, { projectId }, context) => {
@@ -85,7 +95,7 @@ const { handleRequest } = createYoga({
             throw new Error('Unauthorized')
           }
 
-          return prisma.post.findMany({
+          const posts  = await prisma.post.findMany({
             where: {
               projectId
             },
@@ -93,7 +103,64 @@ const { handleRequest } = createYoga({
               author: true
             }
           })
+
+          return posts.map((post) => {
+            post.publishedSince = timeAgo(post.publishedAt)
+          })
         },
+        publishedPostsByProject: async (_, { projectId }, context) => {
+            const { apiKey } = context
+
+            console.log(apiKey, projectId)
+            const isValidRequest = await validateApiKey(apiKey, projectId)
+
+            if (!isValidRequest) {
+                throw new Error('Unauthorized')
+            }
+
+            const posts =  await prisma.post.findMany({
+              where: {
+                projectId,
+                isPublished: true
+              },
+              include: {
+                author: true
+              }
+            })
+
+            return posts.map((post) => {
+                post.publishedSince = timeAgo(post.publishedAt)
+            })
+        },
+        postLatestByProject: async (_, { projectId }, context) => {
+          const {apiKey} = context
+
+          console.log(apiKey, projectId)
+          const isValidRequest = await validateApiKey(apiKey, projectId)
+
+          if (!isValidRequest) {
+            throw new Error('Unauthorized')
+          }
+
+          const post = await prisma.post.findFirst({
+            where: {
+              projectId,
+              isPublished: true
+            },
+            include: {
+              author: true
+            },
+            orderBy: {
+              publishedAt: 'desc'
+            }
+          })
+
+          if (post && post.publishedAt) {
+            post.publishedSince = timeAgo(post.publishedAt)
+          }
+
+          return post
+        }
       }
     }
   }),

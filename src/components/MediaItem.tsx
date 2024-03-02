@@ -2,6 +2,7 @@ interface MediaProps {
   id: string
   url: string
   filename: string
+  name: string | null
 }
 
 interface MediaItemProps {
