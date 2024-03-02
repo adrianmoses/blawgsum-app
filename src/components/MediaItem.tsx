@@ -13,13 +13,13 @@ const MediaItem = ({ media }: MediaItemProps) => {
     <div className="flex mb-8">
       <div className="mr-4 flex-shrink-0">
         <img
-          alt={media.filename}
+          alt={media.name || "Unnamed Cover Image"}
           className="h-16 w-16"
           src={media.url}
         />
       </div>
       <div>
-        <h4 className="text-lg font-bold">{media.filename}</h4>
+        <h4 className="text-lg font-bold">{media.name || "Unnamed Cover Image"}</h4>
       </div>
     </div>
   )

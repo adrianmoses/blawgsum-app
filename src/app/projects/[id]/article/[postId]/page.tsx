@@ -208,7 +208,8 @@ export default function ArticlePage({ params }: { params: { id: string, postId: 
                                               !field.value && "text-muted-foreground")}
                                       >
                                         {field.value ? (
-                                            mediaItems.find((m) => m.id === field.value)?.filename
+                                            mediaItems.find((m) => m.id === field.value)?.name
+                                            || "Unnamed Cover Image"
                                         ) : (
                                             "Select Cover Image"
                                         )}
