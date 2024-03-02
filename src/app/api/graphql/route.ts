@@ -73,7 +73,7 @@ const { handleRequest } = createYoga({
             throw new Error('Unauthorized')
           }
 
-          const post: Post = await prisma.post.findFirst({
+          const post: Post | null = await prisma.post.findFirst({
             where: {
               slug,
               projectId,
@@ -100,7 +100,7 @@ const { handleRequest } = createYoga({
             throw new Error('Unauthorized')
           }
 
-          const posts: Posts[]  = await prisma.post.findMany({
+          const posts: Post[]  = await prisma.post.findMany({
             where: {
               projectId
             },
@@ -110,7 +110,9 @@ const { handleRequest } = createYoga({
           })
 
           return posts.map((post) => {
-            post.publishedSince = timeAgo(post.publishedAt)
+            if (post.publishedAt) {
+              post.publishedSince = timeAgo(post.publishedAt)
+            }
           })
         },
         publishedPostsByProject: async (_, { projectId }, context) => {
@@ -123,7 +125,7 @@ const { handleRequest } = createYoga({
                 throw new Error('Unauthorized')
             }
 
-            const posts: Post =  await prisma.post.findMany({
+            const posts: Post[] =  await prisma.post.findMany({
               where: {
                 projectId,
                 isPublished: true
@@ -134,7 +136,9 @@ const { handleRequest } = createYoga({
             })
 
             return posts.map((post) => {
+              if (post.publishedAt) {
                 post.publishedSince = timeAgo(post.publishedAt)
+              }
             })
         },
         postLatestByProject: async (_, { projectId }, context) => {
@@ -147,7 +151,7 @@ const { handleRequest } = createYoga({
             throw new Error('Unauthorized')
           }
 
-          const post: Post = await prisma.post.findFirst({
+          const post: Post | null = await prisma.post.findFirst({
             where: {
               projectId,
               isPublished: true
