@@ -1,6 +1,7 @@
 import { gql } from 'graphql-tag'
 import { createSchema, createYoga } from 'graphql-yoga'
 import prisma from '@/server/db'
+import type { Post as PrismaPost } from '@prisma/client'
 import argon2 from 'argon2'
 import {timeAgo} from "@/src/app/utils/time-ago";
 
@@ -23,6 +24,10 @@ const validateApiKey = async (apiKey: string | null, projectId: string) => {
   } else {
     return false
   }
+}
+
+interface Post extends PrismaPost {
+  publishedSince?: string
 }
 
 const { handleRequest } = createYoga({
@@ -68,7 +73,7 @@ const { handleRequest } = createYoga({
             throw new Error('Unauthorized')
           }
 
-          const post = await prisma.post.findFirst({
+          const post: Post = await prisma.post.findFirst({
             where: {
               slug,
               projectId,
@@ -95,7 +100,7 @@ const { handleRequest } = createYoga({
             throw new Error('Unauthorized')
           }
 
-          const posts  = await prisma.post.findMany({
+          const posts: Posts[]  = await prisma.post.findMany({
             where: {
               projectId
             },
@@ -118,7 +123,7 @@ const { handleRequest } = createYoga({
                 throw new Error('Unauthorized')
             }
 
-            const posts =  await prisma.post.findMany({
+            const posts: Post =  await prisma.post.findMany({
               where: {
                 projectId,
                 isPublished: true
@@ -142,7 +147,7 @@ const { handleRequest } = createYoga({
             throw new Error('Unauthorized')
           }
 
-          const post = await prisma.post.findFirst({
+          const post: Post = await prisma.post.findFirst({
             where: {
               projectId,
               isPublished: true
