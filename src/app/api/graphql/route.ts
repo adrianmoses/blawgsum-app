@@ -69,7 +69,6 @@ const { handleRequest } = createYoga({
         postByProjectAndSlug: async (_, { projectId, slug }, context) => {
           const { apiKey } = context
 
-          console.log(apiKey, projectId)
           const isValidRequest = await validateApiKey(apiKey, projectId)
 
           if (!isValidRequest) {
@@ -96,7 +95,6 @@ const { handleRequest } = createYoga({
         postsByProject: async (_, { projectId }, context) => {
           const { apiKey } = context
 
-          console.log(apiKey, projectId)
           const isValidRequest = await validateApiKey(apiKey, projectId)
 
           if (!isValidRequest) {
@@ -116,12 +114,12 @@ const { handleRequest } = createYoga({
             if (post.publishedAt) {
               post.publishedSince = timeAgo(post.publishedAt)
             }
+            return post
           })
         },
         publishedPostsByProject: async (_, { projectId }, context) => {
             const { apiKey } = context
 
-            console.log(apiKey, projectId)
             const isValidRequest = await validateApiKey(apiKey, projectId)
 
             if (!isValidRequest) {
@@ -135,6 +133,9 @@ const { handleRequest } = createYoga({
               },
               include: {
                 author: true
+              },
+              orderBy: {
+                publishedAt: 'desc'
               }
             })
 
@@ -142,12 +143,12 @@ const { handleRequest } = createYoga({
               if (post.publishedAt) {
                 post.publishedSince = timeAgo(post.publishedAt)
               }
+              return post
             })
         },
         postLatestByProject: async (_, { projectId }, context) => {
           const {apiKey} = context
 
-          console.log(apiKey, projectId)
           const isValidRequest = await validateApiKey(apiKey, projectId)
 
           if (!isValidRequest) {
