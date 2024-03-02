@@ -10,7 +10,7 @@ interface MediaItemProps {
 
 const MediaItem = ({ media }: MediaItemProps) => {
   return (
-    <div className="flex">
+    <div className="flex mb-8">
       <div className="mr-4 flex-shrink-0">
         <img
           alt={media.filename}
