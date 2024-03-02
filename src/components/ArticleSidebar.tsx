@@ -2,6 +2,7 @@ import {Card, CardContent, CardHeader, CardTitle} from "@/src/components/ui/card
 import {Button} from "@/src/components/ui/button";
 import {trpc} from "@/src/app/_trpc/client";
 import {timeAgo} from "@/src/app/utils/time-ago";
+import {RotateCw} from "lucide-react"
 
 const StatusCard = ({ isPublished, publishedAt, savedAt } : { isPublished: boolean, publishedAt: Date | null, savedAt: Date}) => {
    return (
@@ -28,6 +29,26 @@ const StatusCard = ({ isPublished, publishedAt, savedAt } : { isPublished: boole
        </CardContent>
      </Card>
    )
+}
+
+const PublishButton = ({ publishPost, isLoading } : { publishPost: () => void, isLoading: boolean }) => {
+    return (
+        <>
+            {
+                isLoading ? (
+                    <Button className={"w-full"} disabled>
+                        <RotateCw className="animate-spin mr-2 w-4 h-4" />
+                        Publishing...
+                    </Button>
+                ) : (
+                    <Button className="w-full" onClick={publishPost}>
+                        Publish
+                    </Button>
+                )
+            }
+        </>
+    )
+
 }
 
 interface ArticleSidebarProps {
@@ -58,7 +79,10 @@ export default function ArticleSidebar({ isPublished, publishedAt, savedAt, post
      </div>
      <div className="mb-4">
        {!isPublished && (
-         <Button className="w-full" onClick={publishPost}>Publish</Button>
+           <PublishButton
+               publishPost={publishPost}
+               isLoading={mutation.isLoading}
+           />
        )}
      </div>
      <div className="mb-4">

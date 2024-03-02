@@ -39,7 +39,9 @@ const { handleRequest } = createYoga({
     typeDefs: gql`
       type User {
         id: ID!
+        name: String
         email: String!
+        image: String
       }
       
       type Post {
@@ -48,6 +50,7 @@ const { handleRequest } = createYoga({
         slug: String!
         body: String!
         author: User!
+        coverImage: String
         createdAt: String!
         publishedAt: String
         publishedSince: String
