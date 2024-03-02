@@ -92,6 +92,7 @@ model Media {
   user      User     @relation(fields: [userId], references: [id])
   projectId String
   project   Project  @relation(fields: [projectId], references: [id])
+  name      String?
 }
 
 model SocialContent {

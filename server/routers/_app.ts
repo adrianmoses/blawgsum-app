@@ -6,6 +6,7 @@ import {postRouter} from "@/server/routers/post";
 import {apiRouter} from "@/server/routers/api";
 import {socialRouter} from "@/server/routers/social";
 import {projectRouter} from "@/server/routers/project";
+import {aiRouter} from "@/server/routers/ai";
 
 
 
@@ -18,6 +19,7 @@ export const appRouter = mergeRouters(
     apiRouter,
     socialRouter,
     projectRouter,
+    aiRouter
 );
 
 // export type definition of API
