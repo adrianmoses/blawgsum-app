@@ -24,7 +24,7 @@ const postUpdateSchema = z.object({
     body: z.string(),
     authorId: z.string(),
     savedAt: z.date(),
-    coverImage: z.string().optional(),
+    coverImageId: z.string().optional(),
     publishedAt: z.date().optional()
 });
 
@@ -95,7 +95,7 @@ export const postRouter = router({
                     authorId: input.authorId,
                     savedAt: input.savedAt,
                     publishedAt: input.publishedAt,
-                    coverImage: input.coverImage
+                    coverImageId: input.coverImageId
                 }
             })
             return post;
@@ -137,14 +137,36 @@ export const postRouter = router({
     postPublish: protectedProcedure
         .input(postPublishSchema)
         .mutation(async ({ input }) => {
-            const { postId, publishedAt } = input;
+            const { postId} = input;
+
+            const existingPost = await prisma.post.findUnique({
+                where: {
+                    id: postId
+                }
+            })
+
+            if (!existingPost) {
+                throw new trpcServer.TRPCError({
+                    code: "NOT_FOUND",
+                    message: "Post Not Found"
+                })
+            }
+
+            let updateData = {
+                isPublished: true,
+                publishedAt: new Date()
+            }
+
+            if (existingPost.publishedAt) {
+                updateData.publishedAt = existingPost.publishedAt;
+            }
+
             const post = await prisma.post.update({
                 where: {
                     id: postId
                 },
                 data: {
                     isPublished: true,
-                    publishedAt
                 }
             })
             return post;

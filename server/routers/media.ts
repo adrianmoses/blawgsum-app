@@ -1,11 +1,9 @@
 import {protectedProcedure, router} from "@/server/trpc";
 import prisma from "@/server/db";
-import * as trpcServer from "@trpc/server";
 import {z} from "zod";
 
 
 const mediaCreateSchema = z.object({
-    userId: z.string(),
     url: z.string(),
     mediaType: z.string().default("image"),
     filename: z.string(),
@@ -13,32 +11,27 @@ const mediaCreateSchema = z.object({
 });
 
 const mediaListSchema = z.object({
-    userId: z.string(),
     projectId: z.string()
 });
+
+const mediaUpdateSchema = z.object({
+    mediaId: z.string(),
+    name: z.string()
+})
+
+const mediaDeleteSchema = z.object({
+    mediaId: z.string(),
+})
 
 export const mediaRouter = router({
 
     mediaCreate: protectedProcedure
         .input(mediaCreateSchema)
         .mutation(async ({ input }) => {
-            const { userId, mediaType, filename, url, projectId } = input;
-            const user = await prisma.user.findUnique({
-                where: {
-                    id: userId
-                }
-            })
-
-            if (!user) {
-                throw new trpcServer.TRPCError({
-                    code: "NOT_FOUND",
-                    message: "User Not Found"
-                })
-            }
+            const { mediaType, filename, url, projectId } = input;
 
             const mediaItem = await prisma.media.create({
                 data: {
-                    userId,
                     mediaType,
                     filename,
                     url,
@@ -51,13 +44,36 @@ export const mediaRouter = router({
     mediaList: protectedProcedure
         .input(mediaListSchema)
         .query(async ({ input }) => {
-            const { userId, projectId } = input;
+            const { projectId } = input;
             const media = await prisma.media.findMany({
                 where: {
-                    userId,
                     projectId,
                 }
             })
             return media;
+        }),
+    mediaUpdate: protectedProcedure
+        .input(mediaUpdateSchema)
+        .mutation(async ({ input }) => {
+            const { mediaId, name } = input;
+            const media = await prisma.media.update({
+                where: {
+                    id: mediaId
+                },
+                data: {
+                    name
+                }
+            })
+
+        }),
+    mediaDelete: protectedProcedure
+        .input(mediaDeleteSchema)
+        .mutation(async ({ input }) => {
+            const { mediaId } = input;
+            await prisma.media.delete({
+                where: {
+                    id: mediaId
+                }
+            })
         }),
 })

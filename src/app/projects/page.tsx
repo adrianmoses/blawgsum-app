@@ -1,7 +1,6 @@
 "use client";
 import {useAuth} from "@clerk/nextjs";
 import {trpc} from "@/src/app/_trpc/client";
-import ProjectNavigation from "@/src/components/ProjectNavigation";
 import {Button} from "@/src/components/ui/button";
 import {
     Dialog,
@@ -11,15 +10,32 @@ import {
     DialogTitle,
     DialogTrigger
 } from "@/src/components/ui/dialog";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/src/components/ui/card";
 import CreateProjectForm from "@/src/components/CreateProjectForm";
 import Link from "next/link";
+import Navigation from "@/src/components/Navigation";
+import {Plus} from "lucide-react";
 
+
+const ProjectCard = ({ project } : { project: { id: string, name: string, description: string | null } }) => {
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle>{project.name}</CardTitle>
+                <CardDescription>{project.description || "No description"}</CardDescription>
+            </CardHeader>
+            {/*<CardContent>*/}
+            {/*    <p>Some Stats About The Project</p>*/}
+            {/*</CardContent>*/}
+        </Card>
+    )
+}
 
 const CreateProjectDialog = ({ userId } : { userId: string }) => {
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="secondary">Create Project</Button>
+                <Button variant="secondary"><Plus className="h-4 w-4 mr-2"/> Create Project</Button>
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
@@ -44,23 +60,23 @@ export default function AdminPage() {
 
   return (
     <>
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
-          <span>
-              Welcome to Blawgsum! Projects Go Here.
-          </span>
-          <div className="flex flex-col">
+      <Navigation />
+      <main className="flex flex-col min-h-screen">
+          <div className="w-3/4 mx-auto flex justify-between mt-8">
+                <h1 className="text-4xl font-bold">Projects</h1>
+                {userGet.data?.id && (
+                    <CreateProjectDialog userId={userGet.data?.id} />
+                )}
+          </div>
+          <div className="w-3/4 mx-auto grid grid-cols-3 gap-4 mt-16">
               {projectList.data?.map((project) => (
-                  <Link key={project.id} href={`/projects/${project.id}`} >
-                      <div className="flex flex-col rounded-md bg-gray-400 p-8 cursor-pointer underline">
-                          <span className="text-2xl font-bold">{project.name}</span>
-                          <span className="text-sm">{project.description}</span>
-                      </div>
-                  </Link>
+                  <div key={project.id}>
+                      <Link  href={`/projects/${project.id}`} >
+                          <ProjectCard project={project} />
+                      </Link>
+                  </div>
               ))}
           </div>
-          {userGet.data?.id && (
-              <CreateProjectDialog userId={userGet.data?.id} />
-          )}
       </main>
     </>
   )

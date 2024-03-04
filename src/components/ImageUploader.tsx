@@ -13,7 +13,6 @@ const ImageUploader = ({ userId, refetchImage, projectId } : { userId: string, r
   const saveImageAsMedia = async (fileUrl: string, filename: string) => {
     if (userId && fileUrl) {
       mutation.mutate({
-        userId,
         url: fileUrl,
         mediaType: "image",
         filename,

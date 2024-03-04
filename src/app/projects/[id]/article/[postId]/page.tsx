@@ -39,7 +39,7 @@ const FormSchema = z.object({
   title: z.string(),
   slug: z.string(),
   body: z.string(),
-  coverImage: z.string().nullable().optional(),
+  coverImageId: z.string().nullable().optional(),
   publishedAt: z.date().nullable().optional(),
 })
 
@@ -68,7 +68,7 @@ export default function ArticlePage({ params }: { params: { id: string, postId: 
       title: post.data?.title as string,
       slug: post.data?.slug as string,
       body: post.data?.body as string,
-      coverImage: post.data?.coverImage as string,
+      coverImageId: post.data?.coverImageId as string,
       publishedAt: post.data?.publishedAt as Date,
     }
   })
@@ -91,7 +91,7 @@ export default function ArticlePage({ params }: { params: { id: string, postId: 
         body,
         authorId: user.data.id,
         savedAt: new Date(),
-        coverImage: data.coverImage ? data.coverImage : undefined,
+        coverImageId: data.coverImageId ? data.coverImageId : undefined,
         publishedAt: data.publishedAt ? data.publishedAt : undefined
       })
     }
@@ -193,7 +193,7 @@ export default function ArticlePage({ params }: { params: { id: string, postId: 
                     />
                     <FormField
                         control={form.control}
-                        name="coverImage"
+                        name="coverImageId"
                         render={({field}) => (
                             <div className="w-3/4 mx-auto mt-4">
                               <FormItem className="flex flex-col">
@@ -227,7 +227,7 @@ export default function ArticlePage({ params }: { params: { id: string, postId: 
                                                 key={media.id}
                                                 value={media.id}
                                                 onSelect={() => {
-                                                  form.setValue("coverImage", media.id)
+                                                  form.setValue("coverImageId", media.id)
                                                 }}>
                                               <Check className={cn("mr-2 h-4 w-4", media.id === field.value)}/>
                                               <div className="flex">
@@ -240,8 +240,8 @@ export default function ArticlePage({ params }: { params: { id: string, postId: 
                                     </Command>
                                   </PopoverContent>
                                 </Popover>
-                                <FormMessage>{errors.coverImage &&
-                                    <span>{errors.coverImage.message}</span>}</FormMessage>
+                                <FormMessage>{errors.coverImageId &&
+                                    <span>{errors.coverImageId.message}</span>}</FormMessage>
                               </FormItem>
                               <div>
                                 <a href={"/projects/media"} className="text-xs float-right underline mt-2">Manage

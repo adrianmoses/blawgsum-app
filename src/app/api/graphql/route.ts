@@ -41,7 +41,18 @@ const { handleRequest } = createYoga({
         id: ID!
         name: String
         email: String!
-        image: String
+        avatarImage: UserMedia
+      }
+      
+      type UserMedia {
+        id: ID!
+        url: String!
+      }
+      
+      type Media {
+        id: ID!
+        name: String
+        url: String!
       }
       
       type Post {
@@ -50,7 +61,7 @@ const { handleRequest } = createYoga({
         slug: String!
         body: String!
         author: User!
-        coverImage: String
+        coverImage: Media
         createdAt: String!
         publishedAt: String
         publishedSince: String
@@ -81,7 +92,12 @@ const { handleRequest } = createYoga({
               projectId,
             },
             include: {
-              author: true
+              author: {
+                include: {
+                  avatarImage: true
+                }
+              },
+              coverImage: true
             }
           })
 
@@ -106,7 +122,12 @@ const { handleRequest } = createYoga({
               projectId
             },
             include: {
-              author: true
+              author: {
+                include: {
+                  avatarImage: true
+                }
+              },
+              coverImage: true
             }
           })
 
@@ -132,7 +153,12 @@ const { handleRequest } = createYoga({
                 isPublished: true
               },
               include: {
-                author: true
+                author: {
+                  include: {
+                    avatarImage: true
+                  }
+                },
+                coverImage: true
               },
               orderBy: {
                 publishedAt: 'desc'
@@ -161,7 +187,12 @@ const { handleRequest } = createYoga({
               isPublished: true
             },
             include: {
-              author: true
+              author: {
+                include: {
+                  avatarImage: true
+                }
+              },
+              coverImage: true
             },
             orderBy: {
               publishedAt: 'desc'

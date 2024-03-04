@@ -10,7 +10,7 @@ import PreviewMediaDialog from "@/src/components/PreviewMediaDialog";
 
 
 export default function MediaPage({ params } : { params: { id: string }})  {
-  const [ uploadedImageUrl, setUploadedImageUrl ] = useState<string | null>(null)
+  const [ generatedImageBase64, setGeneratedImageBase64 ] = useState<string | null>(null)
 
   const { id: projectId } = params;
   const { userId } : { userId: string | null | undefined } = useAuth();
@@ -46,14 +46,14 @@ export default function MediaPage({ params } : { params: { id: string }})  {
                 <GenerateImage
                     projectId={projectId}
                     userId={userGet.data.id}
-                    setPreviewImageUrl={setUploadedImageUrl}/>
+                    setGeneratedImageBase64={setGeneratedImageBase64}/>
               )}
               <div className="mt-2">
-                {userGet.data && uploadedImageUrl && (
+                {userGet.data && generatedImageBase64 && (
                     <PreviewMediaDialog
                         userId={userGet.data.id}
                         projectId={projectId}
-                        imageUrl={uploadedImageUrl} />
+                        generatedImageBase64={generatedImageBase64} />
                 )}
               </div>
             </div>

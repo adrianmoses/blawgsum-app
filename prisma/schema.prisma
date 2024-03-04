@@ -16,15 +16,16 @@ model User {
   id            String          @id @default(cuid())
   name          String?
   email         String          @unique
-  image         String?
+  avatarImage   UserMedia?
   createdAt     DateTime        @default(now())
   posts         Post[]
   clerkUserId   String          @unique
   ApiKey        ApiKey[]
-  Media         Media[]
   SocialContent SocialContent[]
   SocialAuth    SocialAuth[]
   Project       Project[]
+  Media         Media?          @relation(fields: [mediaId], references: [id])
+  mediaId       String?
 }
 
 model Project {
@@ -48,21 +49,22 @@ model Category {
 }
 
 model Post {
-  id          String     @id @default(cuid())
-  title       String
-  subtitle    String?
-  slug        String
-  body        String
-  coverImage  String?
-  author      User       @relation(fields: [authorId], references: [id])
-  authorId    String
-  categories  Category[]
-  createdAt   DateTime   @default(now())
-  isPublished Boolean
-  savedAt     DateTime
-  publishedAt DateTime?
-  project     Project    @relation(fields: [projectId], references: [id])
-  projectId   String
+  id           String     @id @default(cuid())
+  title        String
+  subtitle     String?
+  slug         String
+  body         String
+  coverImage   Media?     @relation(fields: [coverImageId], references: [id])
+  coverImageId String?
+  author       User       @relation(fields: [authorId], references: [id])
+  authorId     String
+  categories   Category[]
+  createdAt    DateTime   @default(now())
+  isPublished  Boolean
+  savedAt      DateTime
+  publishedAt  DateTime?
+  project      Project    @relation(fields: [projectId], references: [id])
+  projectId    String
 
   @@unique([authorId, slug])
 }
@@ -85,14 +87,26 @@ model Media {
   id        String   @id @default(cuid())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userId    String
   url       String
   mediaType String
   filename  String
-  user      User     @relation(fields: [userId], references: [id])
   projectId String
   project   Project  @relation(fields: [projectId], references: [id])
   name      String?
+  Post      Post[]
+  User      User[]
+}
+
+model UserMedia {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  url       String
+  mediaType String
+  filename  String
+  name      String?
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String   @unique
 }
 
 model SocialContent {

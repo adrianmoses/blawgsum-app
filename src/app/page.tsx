@@ -1,16 +1,20 @@
 "use client"
-
-import Navigation from "@/src/components/Navigation";
+import {RotateCw} from "lucide-react";
+import {useAuth} from "@clerk/nextjs";
+import {redirect} from "next/navigation";
 
 export default function Home() {
-  return (
-    <>
-      <Navigation/>
-      <main className="flex min-h-screen flex-col items-center justify-between p-24">
-          <span>
-              Welcome to Blawgsum! Stats and stuff will go here.
-          </span>
-      </main>
-    </>
-  )
+    const { userId } = useAuth();
+    if (!userId) {
+       redirect("/sign-in")
+    } else {
+        redirect("/projects")
+    }
+    return (
+        <>
+            <main className="flex min-h-screen flex-col items-center justify-center">
+                <RotateCw className="animate-spin w-48 h-48"/>
+            </main>
+        </>
+    )
 }

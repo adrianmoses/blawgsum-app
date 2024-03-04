@@ -7,19 +7,21 @@ import {trpc} from "@/src/app/_trpc/client";
 interface GenerateImageProps {
     projectId: string;
     userId: string;
-    setPreviewImageUrl: (url: string) => void;
+    setGeneratedImageBase64: (b64: string) => void;
 
 }
-const GenerateImage = ({ projectId, userId, setPreviewImageUrl } : GenerateImageProps) => {
+
+const GenerateImage = ({ projectId, userId, setGeneratedImageBase64 } : GenerateImageProps) => {
 
     const imageGenerate = trpc.imageGenerate.useMutation()
 
     const imagePromptRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
-        if (imageGenerate.isSuccess && imageGenerate.data?.imageUrl) {
-            setPreviewImageUrl(imageGenerate.data.imageUrl)
+        if (imageGenerate.isSuccess && imageGenerate.data?.imageB64) {
+            setGeneratedImageBase64(imageGenerate.data.imageB64)
         }
+
 
     }, [imageGenerate.isSuccess])
 

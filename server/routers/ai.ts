@@ -13,7 +13,7 @@ export const aiRouter = router({
         .input(imageGenerateSchema)
         .mutation(async ({ input }) => {
             const { prompt } = input;
-            const imageUrl = await generateImage(prompt)
-            return { imageUrl };
+            const imageB64 = await generateImage(prompt)
+            return { imageB64 };
         })
 })
