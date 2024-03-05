@@ -10,7 +10,6 @@ const userGetSchema = z.object({
 const userUpdateSchema = z.object({
     userId: z.string(),
     name: z.string(),
-    avatarImageId: z.string().optional()
 })
 export const userRouter = router({
     userGet: protectedProcedure
@@ -36,14 +35,13 @@ export const userRouter = router({
     userUpdate: protectedProcedure
         .input(userUpdateSchema)
         .mutation(async ({input}) => {
-            const {userId, name, avatarImageId} = input;
+            const {userId, name} = input;
             const user = await prisma.user.update({
                 where: {
                     id: userId
                 },
                 data: {
                     name,
-                    avatarImageId
                 }
             })
 

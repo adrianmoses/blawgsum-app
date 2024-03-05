@@ -31,10 +31,14 @@ yarn-error.log*
 # vercel
 .vercel
 
-.turbo
 # typescript
 *.tsbuildinfo
-apps/blawgsum-app/next-env.d.ts
+next-env.d.ts
 
-.idea
+.idea/
 
+.dockerignore
+.env.production
+.env.development
+
+deploy.sh

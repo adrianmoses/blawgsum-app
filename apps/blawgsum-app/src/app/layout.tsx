@@ -4,6 +4,7 @@ import './globals.css'
 import Provider from "@/src/app/_trpc/Provider";
 import {ClerkProvider} from "@clerk/nextjs";
 import {Toaster} from "@/src/components/ui/toaster";
+import SidebarNavigation from "@/src/components/SidebarNavigation";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -19,10 +20,10 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider>
-        <html lang="en">
+        <html lang="en" className="w-full">
             <Provider>
-                <body className={inter.className}>
-                    <main>{children}</main>
+                <body className={`${inter.className} w-full`}>
+                    <SidebarNavigation>{children}</SidebarNavigation>
                     <Toaster />
                 </body>
             </Provider>

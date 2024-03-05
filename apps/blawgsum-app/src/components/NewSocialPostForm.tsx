@@ -21,7 +21,7 @@ const FormSchema = z.object({
 })
 
 const NewSocialPostForm = ({ userId, projectId } : { userId : string, projectId: string }) => {
-    const mediaItems = trpc.mediaList.useQuery({ userId: userId, projectId }, {enabled: !!userId}).data || []
+    const mediaItems = trpc.mediaList.useQuery({ projectId }).data || []
     const mutation = trpc.socialContentPost.useMutation()
 
     const form = useForm<z.infer<typeof FormSchema>>({
