@@ -1,6 +1,7 @@
 import {Button} from "@/src/components/ui/button";
+import {Separator} from "@/src/components/ui/separator";
 import Link from "next/link";
-import {UserButton, useUser} from "@clerk/nextjs";
+import {useUser} from "@clerk/nextjs";
 import {UserResource} from "@clerk/types";
 import {
   Avatar,
@@ -56,21 +57,24 @@ const Navigation = () => {
   const { user } = useUser()
   console.log(user)
   return (
-    <nav className="w-full p-8">
-      <div className="flex flex-col justify-between items-center">
-        <div className="self-end mr-12 flex items-center">
-          {user ? (
-              <UserAvatarDropdown user={user} />
-          ) : (
-            <Link href={"/sign-in"}>
-              <Button className="mr-4" variant={"secondary"}>
-                Sign In
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
-    </nav>
+      <>
+          <nav className="w-full pb-8">
+              <div className="flex flex-col justify-between items-center">
+                  <div className="self-end mr-12 flex items-center">
+                      {user ? (
+                          <UserAvatarDropdown user={user}/>
+                      ) : (
+                          <Link href={"/sign-in"}>
+                              <Button className="mr-4" variant={"secondary"}>
+                                  Sign In
+                              </Button>
+                          </Link>
+                      )}
+                  </div>
+              </div>
+          </nav>
+          <Separator />
+      </>
   )
 }
 

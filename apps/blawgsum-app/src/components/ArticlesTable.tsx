@@ -1,6 +1,8 @@
 import {Table, TableBody, TableCaption, TableHead, TableHeader, TableRow} from "@/src/components/ui/table";
 import {trpc} from "@/src/app/_trpc/client";
 import {useRouter} from "next/navigation";
+import { Badge } from "@/src/components/ui/badge"
+
 
 
 export function ArticlesTable({ projectId } : { projectId: string }) {
@@ -27,11 +29,15 @@ export function ArticlesTable({ projectId } : { projectId: string }) {
       <TableBody>
         {postList.isSuccess && postList.data && postList.data.map((post) => (
           <TableRow key={post.id} className={"cursor-pointer"} onClick={() => goToPost(post.id)}>
-            <td>{post.isPublished ? "Published" : "Draft"}</td>
-            <td>{post.title}</td>
-            <td>{post.categories.join(", ")}</td>
-            <td>{post.savedAt.toDateString()}</td>
-            <td>{post.createdAt.toDateString()}</td>
+            <td className="py-4">{post.isPublished ? (
+                <Badge variant={"secondary"}>Published</Badge>
+            ) : (
+                <Badge>Draft</Badge>
+            )}</td>
+            <td className="py-4">{post.title}</td>
+            <td className="py-4">{post.categories.join(", ")}</td>
+            <td className="py-4">{post.savedAt.toDateString()}</td>
+            <td className="py-4">{post.createdAt.toDateString()}</td>
           </TableRow>
         ))}
       </TableBody>

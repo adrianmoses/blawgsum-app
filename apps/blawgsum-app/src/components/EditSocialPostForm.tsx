@@ -136,7 +136,7 @@ const EditSocialPostForm = ({ userId, socialContentId, projectId, refetch } : Ed
                                     <FormMessage>{errors.media && <span>{errors.media.message}</span>}</FormMessage>
                                 </FormItem>
                                 <div>
-                                    <a href={"/projects/media"} className="text-xs float-right underline mt-2">Manage Media</a>
+                                    <a href={`/projects/${projectId}/media`} className="text-xs float-right underline mt-2">Manage Media</a>
                                 </div>
                             </div>
                         )}
