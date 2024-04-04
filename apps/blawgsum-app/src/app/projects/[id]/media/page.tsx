@@ -21,8 +21,6 @@ export default function MediaPage({ params } : { params: { id: string }})  {
   // @ts-ignore
   const mediaList = trpc.mediaList.useQuery({userId: userGet.data?.id, projectId }, {enabled: !!userGet.data?.id})
 
-
-
   return (
     <>
       <div className="hidden h-screen flex-col md:flex">

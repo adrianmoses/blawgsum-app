@@ -9,21 +9,40 @@ import {
 import {Button} from "@/src/components/ui/button";
 import {trpc} from "@/src/app/_trpc/client";
 import {DialogClose} from "@radix-ui/react-dialog";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {generateSlug} from "random-word-slugs";
 
 
 
-const dataUrlToFile = async (dataUrl: string, filename: string) => {
+const dataUrlToBlob = async (dataUrl: string) => {
     const response = await fetch(dataUrl);
     const blob = await response.blob();
-    return new File([blob], filename, {type: "image/jpeg"});
+    return blob;
+}
+const dataUrlToFile = async (dataUrl: string, filename: string) => {
+    const blob = await dataUrlToBlob(dataUrl);
+    return new File([blob], filename, {type: "image/png"});
+}
+
+const dataUrlToObjectUrl = async (dataUrl: string) => {
+    const blob = await dataUrlToBlob(dataUrl);
+    return URL.createObjectURL(blob);
 }
 
 const PreviewMediaDialog = ({ userId, projectId, generatedImageBase64 } : { userId: string, projectId: string, generatedImageBase64: string }) => {
     const [uploading, setUploading] = useState(false)
+    const [imageObjectUrl, setImageObjectUrl] = useState<string | null>(null)
 
     const mediaCreate = trpc.mediaCreate.useMutation()
+
+    useEffect(() => {
+        if (generatedImageBase64) {
+            dataUrlToObjectUrl(generatedImageBase64).then((url) => {
+                console.log('url', url)
+                setImageObjectUrl(url)
+            })
+        }
+    }, [generatedImageBase64]);
     const saveImageAsMedia = (uploadUrl: string, filename : string) => {
         //TODO: upload base64 image to s3
         if (projectId && uploadUrl && filename) {
@@ -40,8 +59,8 @@ const PreviewMediaDialog = ({ userId, projectId, generatedImageBase64 } : { user
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
 
-        const filename = `${userId}-${projectId}-${generateSlug()}.jpeg`
-        const file = await dataUrlToFile(`data:image/jpeg;base64,${generatedImageBase64}`, filename)
+        const filename = `${userId}-${projectId}-${generateSlug()}.png`
+        const file = await dataUrlToFile(generatedImageBase64, filename)
 
         setUploading(true)
 
@@ -82,8 +101,6 @@ const PreviewMediaDialog = ({ userId, projectId, generatedImageBase64 } : { user
 
         setUploading(false)
         console.log('res', res)
-
-
     }
 
     return (
@@ -100,7 +117,7 @@ const PreviewMediaDialog = ({ userId, projectId, generatedImageBase64 } : { user
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
                     <div className="flex justify-center">
-                        <img src={`data:image/jpeg;base64,${generatedImageBase64}`} alt={"no image"} width={300} height={300}/>
+                        {imageObjectUrl && <img src={imageObjectUrl} alt={imageObjectUrl} width={300} height={300}/> }
                     </div>
                     <DialogFooter className="w-full flex justify-between">
                         <DialogClose asChild>

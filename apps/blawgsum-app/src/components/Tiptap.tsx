@@ -9,8 +9,6 @@ import {Underline} from "@tiptap/extension-underline";
 import {common, createLowlight} from 'lowlight'
 import {TextAlign} from "@tiptap/extension-text-align";
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import ListItem from '@tiptap/extension-list-item';
-import TextStyle from '@tiptap/extension-text-style';
 import Table from '@tiptap/extension-table';
 import TableCell from '@tiptap/extension-table-cell';
 import TableHeader from '@tiptap/extension-table-header';
