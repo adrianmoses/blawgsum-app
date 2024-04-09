@@ -59,7 +59,7 @@ export default function MediaPage({ params } : { params: { id: string }})  {
           <div className="media-list-section min-w-1/2 border-l-2">
             <div className="w-full flex flex-col mx-12 py-8">
               {mediaList.isSuccess && mediaList.data && mediaList.data.map((media) => (
-                <MediaItem media={media} key={media.id} />
+                <MediaItem media={media} key={media.id} refetchMedia={() => mediaList.refetch()}/>
               ))}
             </div>
           </div>

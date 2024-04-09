@@ -231,8 +231,8 @@ export default function ArticlePage({ params }: { params: { id: string, postId: 
                                                 }}>
                                               <Check className={cn("mr-2 h-4 w-4", media.id === field.value)}/>
                                               <div className="flex">
-                                                <img src={media.url} alt={media.filename} className="h-8 w-8"/>
-                                                <span className="ml-4">{media.filename}</span>
+                                                <img src={media.url} alt={media.name || "cover"} className="h-8 w-8"/>
+                                                <span className="ml-4">{media.name}</span>
                                               </div>
                                             </CommandItem>
                                         ))}
